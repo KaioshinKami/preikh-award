@@ -1,0 +1,41 @@
+@use '@/shared/sass/mixins' as *;
+
+.panel {
+  @include frost-card;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px 16px;
+
+  @include from($breakpoint-sm) {
+    padding: 28px;
+  }
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.title {
+  @include display-text;
+  font-size: 22px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.error {
+  padding: 10px 14px;
+  border: 1px solid rgb(248 113 113 / 40%);
+  border-radius: var(--radius-sm);
+  background: rgb(248 113 113 / 10%);
+  color: #fecaca;
+  font-size: 14px;
+}

@@ -1,0 +1,20 @@
+@use '@/shared/sass/mixins' as *;
+
+.section {
+  @include section-spacing;
+}
+
+.inner {
+  @include container;
+  display: grid;
+
+  @include from($breakpoint-md) {
+    grid-template-columns: 1fr 1.4fr;
+    align-items: start;
+    gap: 64px;
+  }
+}
+
+.list {
+  border-top: 1px solid var(--color-border);
+}

@@ -1,0 +1,81 @@
+@use '@/shared/sass/mixins' as *;
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 12px 28px;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  transition:
+    transform 0.25s var(--ease-out),
+    box-shadow 0.25s var(--ease-out),
+    background-color 0.25s ease,
+    border-color 0.25s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  @include reduced-motion {
+    &:hover:not(:disabled) {
+      transform: none;
+    }
+  }
+}
+
+button.button {
+  border: 0;
+}
+
+.small {
+  min-height: 40px;
+  padding: 8px 18px;
+  font-size: 14px;
+}
+
+.primary {
+  background: var(--gradient-ice);
+  color: var(--color-on-ice);
+  box-shadow: 0 10px 30px -12px rgb(125 211 252 / 70%);
+
+  &:hover {
+    box-shadow: 0 16px 40px -12px rgb(125 211 252 / 90%);
+  }
+}
+
+.danger {
+  border: 1px solid rgb(248 113 113 / 45%);
+  background: rgb(248 113 113 / 8%);
+  color: #fecaca;
+
+  &:hover:not(:disabled) {
+    border-color: #f87171;
+    background: rgb(248 113 113 / 16%);
+  }
+}
+
+.ghost {
+  border: 1px solid rgb(186 230 253 / 35%);
+  background: rgb(125 211 252 / 6%);
+  color: var(--color-frost);
+
+  &:hover {
+    border-color: var(--color-ice);
+    background: rgb(125 211 252 / 14%);
+  }
+}

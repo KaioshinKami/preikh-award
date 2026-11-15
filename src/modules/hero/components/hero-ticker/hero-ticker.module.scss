@@ -1,0 +1,44 @@
+@use '@/shared/sass/mixins' as *;
+
+.ticker {
+  overflow: hidden;
+  padding-block: 24px;
+}
+
+.band {
+  width: 110%;
+  margin-left: -5%;
+  padding-block: 14px;
+  background: var(--gradient-ice);
+  color: var(--color-on-ice);
+  rotate: -2deg;
+  box-shadow: 0 0 60px -10px rgb(125 211 252 / 50%);
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  animation: ticker-scroll 40s linear infinite;
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding-right: 40px;
+  font-family: var(--font-display);
+  font-size: clamp(14px, 2vw, 18px);
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@keyframes ticker-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}

@@ -1,0 +1,138 @@
+@use '@/shared/sass/mixins' as *;
+
+.hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: calc(100svh - var(--header-height));
+  padding-block: 48px 140px;
+  overflow: hidden;
+}
+
+.backgroundFlake {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(140vw, 760px);
+  height: auto;
+  color: rgb(125 211 252 / 8%);
+  translate: -50% -55%;
+  animation: flake-spin 120s linear infinite;
+  pointer-events: none;
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+.content {
+  @include container;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+}
+
+.badge {
+  display: inline-flex;
+  padding: 8px 18px;
+  border: 1px solid rgb(125 211 252 / 35%);
+  border-radius: var(--radius-pill);
+  background: rgb(125 211 252 / 8%);
+  color: var(--color-ice);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: var(--font-display);
+  line-height: 0.95;
+}
+
+.titleMain {
+  font-size: clamp(56px, 16vw, 168px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: var(--gradient-ice);
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 40px rgb(125 211 252 / 35%));
+}
+
+.titleSub {
+  margin-top: 12px;
+  color: var(--color-frost);
+  font-size: clamp(16px, 4vw, 34px);
+  font-weight: 500;
+  letter-spacing: 0.5em;
+  // letter-spacing adds trailing space; pull it back so the line stays centered.
+  margin-right: -0.5em;
+}
+
+.lead {
+  max-width: 560px;
+  color: var(--color-text-muted);
+  font-size: clamp(16px, 2.2vw, 19px);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 14px;
+  color: var(--color-frost);
+  font-weight: 600;
+}
+
+.metaDot {
+  display: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-ice);
+  box-shadow: 0 0 12px var(--color-ice);
+
+  // On narrow screens date and venue wrap onto separate lines, so the separator would dangle.
+  @include from($breakpoint-sm) {
+    display: block;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.countdown {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.snowdrift {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 120px;
+  pointer-events: none;
+
+  @include from($breakpoint-md) {
+    height: 180px;
+  }
+}
+
+@keyframes flake-spin {
+  to {
+    rotate: 360deg;
+  }
+}

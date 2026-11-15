@@ -1,0 +1,98 @@
+@use '@/shared/sass/mixins' as *;
+
+.footer {
+  position: relative;
+  overflow: hidden;
+  padding-top: 64px;
+  border-top: 1px solid var(--color-border);
+  background: linear-gradient(180deg, transparent, rgb(2 5 12 / 85%) 40%);
+}
+
+.inner {
+  @include container;
+  display: grid;
+  gap: 32px;
+
+  @include from($breakpoint-md) {
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 48px;
+  }
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tagline {
+  max-width: 320px;
+  color: var(--color-text-muted);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+
+  @include from($breakpoint-md) {
+    flex-direction: column;
+  }
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--color-ice);
+  }
+}
+
+.event {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--color-text-muted);
+}
+
+.eventDate {
+  color: var(--color-frost);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.bottom {
+  @include container;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 48px;
+  padding-block: 16px 24px;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.watermark {
+  position: absolute;
+  bottom: -0.18em;
+  left: 50%;
+  translate: -50% 0;
+  color: transparent;
+  font-family: var(--font-display);
+  font-size: clamp(80px, 22vw, 300px);
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  -webkit-text-stroke: 1px rgb(125 211 252 / 12%);
+  pointer-events: none;
+}

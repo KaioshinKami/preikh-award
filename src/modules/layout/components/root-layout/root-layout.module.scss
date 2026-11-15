@@ -1,0 +1,59 @@
+@use '@/shared/sass/mixins' as *;
+
+// Night sky: fixed aurora glows behind the snow and the content.
+.sky {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgb(30 64 175 / 35%), transparent 60%),
+    linear-gradient(180deg, #071025 0%, var(--color-bg) 55%, #03060f 100%);
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 70vmax;
+    height: 70vmax;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.35;
+    animation: aurora-drift 28s ease-in-out infinite alternate;
+  }
+
+  &::before {
+    top: -30vmax;
+    left: -20vmax;
+    background: radial-gradient(circle, rgb(94 234 212 / 55%), transparent 65%);
+  }
+
+  &::after {
+    top: -25vmax;
+    right: -25vmax;
+    background: radial-gradient(circle, rgb(167 139 250 / 55%), transparent 65%);
+    animation-delay: -14s;
+  }
+
+  @include reduced-motion {
+    &::before,
+    &::after {
+      animation: none;
+    }
+  }
+}
+
+.page {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes aurora-drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    transform: translate3d(8vmax, 6vmax, 0) scale(1.15);
+  }
+}

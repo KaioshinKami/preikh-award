@@ -1,0 +1,54 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  color: var(--color-frost);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.control {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: rgb(5 9 20 / 60%);
+  color: var(--color-text);
+  font: inherit;
+  transition: border-color 0.2s ease;
+
+  &:hover {
+    border-color: rgb(125 211 252 / 35%);
+  }
+
+  &:focus-visible {
+    border-color: var(--color-ice);
+    outline-offset: 1px;
+  }
+
+  .field[data-invalid='true'] & {
+    border-color: #f87171;
+  }
+}
+
+textarea.control {
+  min-height: 96px;
+  resize: vertical;
+}
+
+select.control {
+  appearance: auto;
+}
+
+.message {
+  color: var(--color-text-muted);
+  font-size: 13px;
+
+  .field[data-invalid='true'] & {
+    color: #fca5a5;
+  }
+}

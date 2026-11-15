@@ -1,0 +1,83 @@
+@use '@/shared/sass/mixins' as *;
+
+$chart-bar-color: #38bdf8;
+
+.nomination {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgb(5 9 20 / 40%);
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.title {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.total {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 12px;
+  align-items: center;
+  font-size: 14px;
+
+  @include from($breakpoint-sm) {
+    grid-template-columns: minmax(0, 200px) minmax(0, 1fr) 90px;
+  }
+}
+
+.name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.track {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: rgb(159 179 204 / 14%);
+
+  @include from($breakpoint-sm) {
+    grid-column: auto;
+    grid-row: auto;
+  }
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: $chart-bar-color;
+  transform-origin: left;
+}
+
+.value {
+  color: var(--color-text-muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

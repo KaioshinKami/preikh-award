@@ -1,0 +1,72 @@
+.switchRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 72px;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgb(5 9 20 / 40%);
+  cursor: pointer;
+
+  &:has(.switchInput:disabled) {
+    cursor: progress;
+  }
+}
+
+// Visually replaced by the track, still focusable and announced as a switch.
+.switchInput {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.switchTrack {
+  position: relative;
+  flex-shrink: 0;
+  width: 48px;
+  height: 28px;
+  border-radius: var(--radius-pill);
+  background: rgb(159 179 204 / 30%);
+  transition: background-color 0.2s ease;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--color-frost);
+    transition: transform 0.2s var(--ease-out);
+  }
+
+  .switchInput:checked + & {
+    background: var(--color-ice-strong);
+  }
+
+  .switchInput:checked + &::after {
+    transform: translateX(20px);
+  }
+
+  .switchInput:focus-visible + & {
+    outline: 2px solid var(--color-ice);
+    outline-offset: 3px;
+  }
+}
+
+.switchText {
+  display: flex;
+  flex-direction: column;
+}
+
+.switchTitle {
+  font-weight: 700;
+}
+
+.switchDescription {
+  color: var(--color-text-muted);
+  font-size: 14px;
+}

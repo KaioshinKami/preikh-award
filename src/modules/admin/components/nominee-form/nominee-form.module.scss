@@ -1,0 +1,17 @@
+@use '@/shared/sass/mixins' as *;
+
+.form {
+  display: grid;
+  gap: 12px;
+  align-items: end;
+
+  @include from($breakpoint-md) {
+    grid-template-columns: 1fr 1.4fr 1.4fr auto;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

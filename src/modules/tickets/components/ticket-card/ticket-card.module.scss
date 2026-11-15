@@ -1,0 +1,66 @@
+@use '@/shared/sass/mixins' as *;
+
+.card {
+  @include frost-card;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  padding: 28px 24px;
+
+  &[data-featured='true'] {
+    background: var(--color-surface-strong);
+    box-shadow:
+      0 0 0 1px var(--color-ice),
+      0 30px 70px -30px rgb(125 211 252 / 80%);
+  }
+}
+
+.badge {
+  align-self: flex-start;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--gradient-ice);
+  color: var(--color-on-ice);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.name {
+  @include display-text;
+  font-size: 22px;
+}
+
+.price {
+  color: var(--color-ice);
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.perks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+}
+
+.perk {
+  display: flex;
+  gap: 10px;
+  color: var(--color-text-muted);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.check {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+  color: var(--color-aurora-teal);
+}

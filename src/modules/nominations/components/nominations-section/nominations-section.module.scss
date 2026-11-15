@@ -1,0 +1,9 @@
+@use '@/shared/sass/mixins' as *;
+
+.section {
+  @include section-spacing;
+}
+
+.inner {
+  @include container;
+}

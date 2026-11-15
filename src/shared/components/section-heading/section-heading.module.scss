@@ -1,0 +1,48 @@
+@use '@/shared/sass/mixins' as *;
+
+.heading {
+  margin-bottom: 40px;
+
+  @include from($breakpoint-md) {
+    margin-bottom: 56px;
+  }
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 720px;
+
+  &[data-align='center'] {
+    align-items: center;
+    margin-inline: auto;
+    text-align: center;
+  }
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-ice);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.title {
+  @include display-text;
+  font-size: clamp(28px, 4.6vw, 52px);
+  background: linear-gradient(180deg, #fff 30%, #bfe6ff);
+  background-clip: text;
+  color: transparent;
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: 600px;
+  color: var(--color-text-muted);
+  font-size: 17px;
+}

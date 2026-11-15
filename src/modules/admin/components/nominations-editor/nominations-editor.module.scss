@@ -1,0 +1,11 @@
+.createForm {
+  padding: 16px;
+  border: 1px dashed rgb(125 211 252 / 40%);
+  border-radius: var(--radius-md);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}

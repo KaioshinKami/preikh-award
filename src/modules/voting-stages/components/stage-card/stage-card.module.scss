@@ -1,0 +1,77 @@
+@use '@/shared/sass/mixins' as *;
+
+.card {
+  @include frost-card;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  padding: 24px;
+
+  &[data-status='done'] {
+    opacity: 0.75;
+  }
+
+  &[data-status='active'] {
+    box-shadow:
+      0 0 0 1px var(--color-ice),
+      0 24px 60px -24px rgb(125 211 252 / 70%);
+  }
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.position {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgb(125 211 252 / 40%);
+  border-radius: 50%;
+  color: var(--color-ice);
+  font-family: var(--font-display);
+  font-weight: 700;
+
+  .card[data-status='active'] & {
+    border-color: transparent;
+    background: var(--gradient-ice);
+    color: var(--color-on-ice);
+  }
+}
+
+.status {
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  background: rgb(125 211 252 / 10%);
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+
+  .card[data-status='active'] & {
+    background: rgb(94 234 212 / 16%);
+    color: var(--color-aurora-teal);
+  }
+}
+
+.date {
+  color: var(--color-ice);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.title {
+  @include display-text;
+  font-size: 20px;
+}
+
+.description {
+  color: var(--color-text-muted);
+  font-size: 15px;
+}
