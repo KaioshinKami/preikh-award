@@ -16,3 +16,10 @@ export const RESTRICT_VIOLATION = '23001';
 export function hasErrorCode(error: unknown, code: string): boolean {
   return error instanceof postgres.PostgresError && error.code === code;
 }
+
+// "%text%" for ILIKE, with the user's own % and _ matched literally. Empty input means no filter.
+export function toContainsPattern(search: string | undefined): string | null {
+  const trimmed = search?.trim();
+  if (!trimmed) return null;
+  return `%${trimmed.replace(/[\\%_]/g, '\\$&')}%`;
+}

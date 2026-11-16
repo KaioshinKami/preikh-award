@@ -4,6 +4,8 @@ import { requireAdmin } from '../auth/session.ts';
 import { nominationsAdminRoutes } from '../nominations/nominations-admin-routes.ts';
 import { getSettings, updateSettings, type Settings } from '../settings/settings-repository.ts';
 import { getStats } from '../stats/stats-repository.ts';
+import { usersAdminRoutes } from '../users/users-admin-routes.ts';
+import { votesAdminRoutes } from '../votes/votes-admin-routes.ts';
 
 const settingsSchema = {
   body: {
@@ -29,4 +31,6 @@ export async function adminRoutes(app: FastifyInstance) {
 
   await app.register(nominationsAdminRoutes);
   await app.register(applicationsAdminRoutes);
+  await app.register(usersAdminRoutes);
+  await app.register(votesAdminRoutes);
 }

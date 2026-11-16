@@ -2,10 +2,14 @@ import { apiRequest } from '@/shared/api/api';
 import type {
   AdminNomination,
   AdminStats,
+  AdminUser,
   Application,
   ApplicationStatus,
   NominationInput,
   NomineeInput,
+  UserRole,
+  VotesFilter,
+  VotesPage,
   VotingSettings,
 } from '../model/types';
 
@@ -65,4 +69,36 @@ export async function approveApplication(id: number): Promise<void> {
 
 export async function rejectApplication(id: number): Promise<void> {
   await apiRequest(`/admin/applications/${id}/reject`, { method: 'POST' });
+}
+
+export async function fetchUsers(search: string): Promise<AdminUser[]> {
+  const query = search ? `?${new URLSearchParams({ search })}` : '';
+  const { users } = await apiRequest<{ users: AdminUser[] }>(`/admin/users${query}`);
+  return users;
+}
+
+export async function updateUserRole(id: number, role: UserRole): Promise<void> {
+  await apiRequest(`/admin/users/${id}/role`, { method: 'PUT', body: { role } });
+}
+
+export async function deleteUser(id: number): Promise<void> {
+  await apiRequest(`/admin/users/${id}`, { method: 'DELETE' });
+}
+
+export function fetchVotes({
+  userId,
+  nominationId,
+  search,
+  limit,
+  offset,
+}: VotesFilter): Promise<VotesPage> {
+  const params = new URLSearchParams({ limit: String(limit), offset: String(offset) });
+  if (userId) params.set('userId', String(userId));
+  if (nominationId) params.set('nominationId', String(nominationId));
+  if (search) params.set('search', search);
+  return apiRequest<VotesPage>(`/admin/votes?${params}`);
+}
+
+export async function deleteVote(id: number): Promise<void> {
+  await apiRequest(`/admin/votes/${id}`, { method: 'DELETE' });
 }

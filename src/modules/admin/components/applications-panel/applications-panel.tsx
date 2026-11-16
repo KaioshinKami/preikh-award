@@ -38,7 +38,7 @@ export function ApplicationsPanel() {
   );
 
   return (
-    <AdminPanel title='Заявки' actions={filters} error={error}>
+    <AdminPanel title='Заявки на номинантов' actions={filters} error={error}>
       {isLoading && !applications && <p className={styles.muted}>Загружаем заявки…</p>}
       {applications?.length === 0 && <p className={styles.muted}>Заявок нет.</p>}
       <div className={styles.list}>

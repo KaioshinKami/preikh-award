@@ -1,0 +1,30 @@
+.counter {
+  color: var(--color-text-muted);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.search {
+  max-width: 420px;
+}
+
+.self {
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.role {
+  display: inline-flex;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background: rgb(159 179 204 / 12%);
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  &[data-role='admin'] {
+    background: rgb(125 211 252 / 14%);
+    color: var(--color-ice);
+  }
+}

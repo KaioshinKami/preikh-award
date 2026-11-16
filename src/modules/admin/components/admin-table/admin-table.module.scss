@@ -1,0 +1,73 @@
+@use '@/shared/sass/mixins' as *;
+
+// Shared by the users and votes tables. Wide tables scroll inside the panel on phones.
+.scroller {
+  margin-inline: -16px;
+  padding-inline: 16px;
+  overflow-x: auto;
+
+  @include from($breakpoint-sm) {
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+}
+
+.table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: 14px;
+
+  th {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 12px;
+    border-bottom: 1px solid rgb(186 230 253 / 8%);
+    vertical-align: middle;
+  }
+
+  tbody tr:hover {
+    background: rgb(125 211 252 / 4%);
+  }
+}
+
+.numeric {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+// break-word (not anywhere) keeps emails whole when sizing columns; the table scrolls instead.
+.primary {
+  font-weight: 700;
+  overflow-wrap: break-word;
+}
+
+.secondary {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  overflow-wrap: break-word;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.muted {
+  color: var(--color-text-muted);
+}

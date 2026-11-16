@@ -44,6 +44,45 @@ export type Application = {
   authorEmail: string;
 };
 
+export type UserRole = 'user' | 'admin';
+
+export type AdminUser = {
+  id: number;
+  name: string;
+  email: string;
+  role: UserRole;
+  createdAt: string;
+  votes: number;
+  applications: number;
+};
+
+export type AdminVote = {
+  id: number;
+  createdAt: string;
+  userId: number;
+  userName: string;
+  userEmail: string;
+  nominationId: number;
+  nominationTitle: string;
+  nomineeId: number;
+  nomineeName: string;
+};
+
+export type VotesFilter = {
+  userId: number | null;
+  nominationId: number | null;
+  search: string;
+  limit: number;
+  offset: number;
+};
+
+export type VotesPage = {
+  votes: AdminVote[];
+  total: number;
+  // The user from `userId`, so the filter can show a name even when they have no votes.
+  user: { id: number; name: string; email: string } | null;
+};
+
 export type NominationInput = {
   title: string;
   category: string;

@@ -1,53 +1,167 @@
 @use '@/shared/sass/mixins' as *;
 
+$sidebar-width: 248px;
+
 .page {
   min-height: 100vh;
   background:
     radial-gradient(90% 50% at 50% -10%, rgb(30 64 175 / 30%), transparent 60%), var(--color-bg);
+
+  @include from($breakpoint-md) {
+    display: grid;
+    grid-template-columns: $sidebar-width minmax(0, 1fr);
+  }
 }
 
-.header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  border-bottom: 1px solid var(--color-border);
-  background: rgb(5 9 20 / 85%);
-  backdrop-filter: blur(16px);
-}
-
-.headerInner {
-  @include container;
-  display: flex;
+// Phones: a top bar (logo + account) with a scrollable row of sections.
+// Desktop: a full-height sidebar with sections stacked and the account at the bottom.
+.sidebar {
+  display: grid;
+  grid-template-areas:
+    'brand account'
+    'nav nav';
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 12px;
-  height: var(--header-height);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border);
+  background: rgb(5 9 20 / 85%);
+
+  @include from($breakpoint-md) {
+    position: sticky;
+    top: 0;
+    grid-template-areas:
+      'brand'
+      'nav'
+      'account';
+    grid-template-rows: auto 1fr auto;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 32px;
+    height: 100vh;
+    padding: 24px 16px;
+    border-right: 1px solid var(--color-border);
+    border-bottom: 0;
+    backdrop-filter: blur(16px);
+  }
 }
 
-.logoLink {
-  border-radius: var(--radius-sm);
+.brand {
+  grid-area: brand;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+
+  @include from($breakpoint-md) {
+    padding-inline: 8px;
+  }
 }
 
 .badge {
-  display: none;
-  padding: 4px 12px;
+  padding: 3px 10px;
   border-radius: var(--radius-pill);
   background: rgb(125 211 252 / 12%);
   color: var(--color-ice);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
 
-  @include from($breakpoint-sm) {
-    display: inline-flex;
+.nav {
+  grid-area: nav;
+  display: flex;
+  gap: 4px;
+  margin-inline: -16px;
+  padding-inline: 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  @include from($breakpoint-md) {
+    flex-direction: column;
+    margin-inline: 0;
+    padding-inline: 0;
+    overflow: visible;
   }
+}
+
+.navLink {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  color: var(--color-text-muted);
+  font-size: 14px;
+  font-weight: 700;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+
+  &:hover {
+    background: rgb(125 211 252 / 8%);
+    color: var(--color-text);
+  }
+
+  &[aria-current='page'] {
+    background: var(--gradient-ice);
+    color: var(--color-on-ice);
+  }
+
+  @include from($breakpoint-md) {
+    min-height: 44px;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+  }
+}
+
+.account {
+  grid-area: account;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  @include from($breakpoint-md) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 16px 8px 0;
+    border-top: 1px solid var(--color-border);
+  }
+}
+
+.userInfo {
+  display: none;
+
+  @include from($breakpoint-md) {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+}
+
+.userName,
+.userEmail {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.userName {
+  font-weight: 700;
+}
+
+.userEmail {
+  color: var(--color-text-muted);
+  font-size: 13px;
 }
 
 .siteLink {
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
-  margin-left: auto;
+  min-height: 40px;
   color: var(--color-text-muted);
   font-size: 14px;
   font-weight: 600;
@@ -58,9 +172,22 @@
 }
 
 .main {
-  @include container;
   display: flex;
   flex-direction: column;
   gap: 24px;
-  padding-block: 32px 64px;
+  min-width: 0;
+  padding: 24px 16px 64px;
+
+  @include from($breakpoint-sm) {
+    padding: 32px 24px 72px;
+  }
+
+  @include from($breakpoint-md) {
+    padding: 40px 40px 80px;
+  }
+}
+
+.title {
+  @include display-text;
+  font-size: clamp(24px, 3vw, 32px);
 }

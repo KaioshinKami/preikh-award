@@ -1,70 +1,76 @@
-import { useState } from 'react';
+import type { ReactNode } from 'react';
 import { useAuth } from '@/modules/auth';
-import { Button } from '@/shared/components';
+import { Button, Logo } from '@/shared/components';
 import { AdminLayout } from '../../components/admin-layout/admin-layout';
 import { ApplicationsPanel } from '../../components/applications-panel/applications-panel';
 import { NominationsEditor } from '../../components/nominations-editor/nominations-editor';
 import { SettingsPanel } from '../../components/settings-panel/settings-panel';
 import { StatsPanel } from '../../components/stats-panel/stats-panel';
+import { UsersPanel } from '../../components/users-panel/users-panel';
+import { VotesPanel } from '../../components/votes-panel/votes-panel';
+import { useAdminRoute } from '../../model/use-admin-route';
 import styles from './admin-page.module.scss';
 
-type AdminTab = 'stats' | 'nominations' | 'applications';
-
-const ADMIN_TABS: { id: AdminTab; label: string }[] = [
-  { id: 'stats', label: 'Статистика' },
-  { id: 'nominations', label: 'Номинации' },
-  { id: 'applications', label: 'Заявки' },
-];
+function AccessScreen({ children }: { children: ReactNode }) {
+  return (
+    <div className={styles.access}>
+      <a href='/' className={styles.accessLogo} aria-label='PREIKH AWARD — на сайт'>
+        <Logo />
+      </a>
+      <div className={styles.accessCard}>{children}</div>
+    </div>
+  );
+}
 
 // The server checks the admin role on every /api/admin request; this guard only picks the screen.
 export function AdminPage() {
   const { user, isLoading, openAuthDialog } = useAuth();
-  const [activeTab, setActiveTab] = useState<AdminTab>('stats');
+  const { section, params, navigate } = useAdminRoute();
 
   if (isLoading) {
     return (
-      <AdminLayout>
+      <AccessScreen>
         <p className={styles.message}>Проверяем доступ…</p>
-      </AdminLayout>
+      </AccessScreen>
     );
   }
 
   if (user?.role !== 'admin') {
     return (
-      <AdminLayout>
-        <div className={styles.denied}>
-          <h1 className={styles.deniedTitle}>Только для администратора</h1>
-          <p className={styles.message}>
-            {user
-              ? 'У вашего аккаунта нет прав администратора.'
-              : 'Войдите в аккаунт администратора.'}
-          </p>
-          {!user && <Button onClick={() => openAuthDialog('login')}>Войти</Button>}
-        </div>
-      </AdminLayout>
+      <AccessScreen>
+        <h1 className={styles.accessTitle}>Только для администратора</h1>
+        <p className={styles.message}>
+          {user
+            ? 'У вашего аккаунта нет прав администратора.'
+            : 'Войдите в аккаунт администратора.'}
+        </p>
+        {!user && <Button onClick={() => openAuthDialog('login')}>Войти</Button>}
+      </AccessScreen>
     );
   }
 
+  const votesUserId = Number(params.get('user')) || null;
+
   return (
-    <AdminLayout>
-      <h1 className='visually-hidden'>Панель администратора</h1>
-      <SettingsPanel />
-      <nav className={styles.tabs} aria-label='Разделы админки'>
-        {ADMIN_TABS.map((tab) => (
-          <button
-            key={tab.id}
-            type='button'
-            className={styles.tab}
-            aria-pressed={tab.id === activeTab}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </nav>
-      {activeTab === 'stats' && <StatsPanel />}
-      {activeTab === 'nominations' && <NominationsEditor />}
-      {activeTab === 'applications' && <ApplicationsPanel />}
+    <AdminLayout activeSection={section} onNavigate={navigate}>
+      {section === 'overview' && (
+        <>
+          <SettingsPanel />
+          <StatsPanel />
+        </>
+      )}
+      {section === 'votes' && (
+        <VotesPanel
+          key={votesUserId ?? 'all'}
+          userId={votesUserId}
+          onClearUser={() => navigate('votes')}
+        />
+      )}
+      {section === 'users' && (
+        <UsersPanel onShowVotes={(userId) => navigate('votes', { user: String(userId) })} />
+      )}
+      {section === 'nominations' && <NominationsEditor />}
+      {section === 'applications' && <ApplicationsPanel />}
     </AdminLayout>
   );
 }
