@@ -26,5 +26,8 @@
   },
   "workspaces": [
     "server"
-  ]
+  ],
+  "engines": {
+    "node": "26.x"
+  }
 }

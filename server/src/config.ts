@@ -13,11 +13,16 @@ export function loadConfig() {
     throw new Error(`JWT_SECRET must be at least ${MIN_JWT_SECRET_LENGTH} characters`);
   }
 
+  // Vercel serves only HTTPS and passes the client IP in X-Forwarded-For, which it overwrites itself.
+  const isVercel = process.env.VERCEL === '1';
+
   return {
     databaseUrl: requireEnv('DATABASE_URL'),
     jwtSecret,
     port: Number(process.env.PORT ?? DEFAULT_PORT),
-    isProduction: process.env.NODE_ENV === 'production',
+    isProduction: process.env.NODE_ENV === 'production' || isVercel,
+    // Without it every request looks like it comes from the proxy, so rate limits would be shared.
+    trustProxy: isVercel,
   };
 }
 

@@ -19,7 +19,7 @@ type BuildAppOptions = {
 };
 
 export async function buildApp({ sql, config, logger = true }: BuildAppOptions) {
-  const app = Fastify({ logger });
+  const app = Fastify({ logger, trustProxy: config.trustProxy });
 
   app.decorate('sql', sql);
   app.decorate('config', config);

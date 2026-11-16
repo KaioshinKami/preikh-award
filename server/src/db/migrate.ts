@@ -1,12 +1,29 @@
 import { readdir, readFile } from 'node:fs/promises';
 import postgres from 'postgres';
 import { requireEnv } from '../config.ts';
-import { createSql, type Sql } from './sql.ts';
+import { createSql, hasErrorCode, type Sql } from './sql.ts';
 
 const MIGRATIONS_DIR = new URL('../../migrations/', import.meta.url);
+const DATABASE_MISSING = '3D000';
+
+async function databaseExists(databaseUrl: string): Promise<boolean> {
+  const sql = postgres(databaseUrl, { max: 1, onnotice: () => {} });
+  try {
+    await sql`select 1`;
+    return true;
+  } catch (error) {
+    if (hasErrorCode(error, DATABASE_MISSING)) return false;
+    throw error;
+  } finally {
+    await sql.end();
+  }
+}
 
 // Creates the database from DATABASE_URL if it is missing, via the maintenance "postgres" database.
+// Hosted databases (Neon, Supabase) already exist, so their maintenance database is never touched.
 export async function ensureDatabase(databaseUrl: string): Promise<void> {
+  if (await databaseExists(databaseUrl)) return;
+
   const url = new URL(databaseUrl);
   const databaseName = decodeURIComponent(url.pathname.slice(1));
   url.pathname = '/postgres';

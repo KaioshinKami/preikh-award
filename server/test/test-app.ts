@@ -39,6 +39,7 @@ export async function createTestApp() {
     jwtSecret: 'test-secret-that-is-long-enough-for-hs256-signing',
     port: 0,
     isProduction: false,
+    trustProxy: false,
   };
   const app = await buildApp({ sql, config, logger: false });
 
