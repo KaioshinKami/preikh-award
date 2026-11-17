@@ -38,6 +38,11 @@ export function NomineeEditorRow({ nominee, onChanged }: NomineeEditorRowProps) 
         />
       ) : (
         <div className={styles.summary}>
+          {nominee.avatarUrl ? (
+            <img className={styles.photo} src={nominee.avatarUrl} alt='' />
+          ) : (
+            <span className={styles.photo} aria-hidden='true' />
+          )}
           <div className={styles.text}>
             <span className={styles.name}>{nominee.name}</span>
             {nominee.tagline && <span className={styles.tagline}>{nominee.tagline}</span>}

@@ -1,10 +1,40 @@
 import { AdminPage } from '@/modules/admin';
 import { AuthProvider } from '@/modules/auth';
+import { RootLayout } from '@/modules/layout';
+import { NominationPage, parseNominationPath } from '@/modules/nominations';
+import {
+  isAdminPath,
+  usePathname,
+  useScrollRestoration,
+  useScrollToHashOnOpen,
+} from '@/shared/lib/navigation';
 import { LandingPage } from './landing-page';
 
-// shortcut: two screens need no router; the admin page picks its own section from /admin/<section>.
-const isAdminRoute = /^\/admin(\/|$)/.test(window.location.pathname);
-
+// Screens: the main page, a nomination page (/nominations/<id>) and the admin page (/admin/...).
 export function App() {
-  return <AuthProvider>{isAdminRoute ? <AdminPage /> : <LandingPage />}</AuthProvider>;
+  const pathname = usePathname();
+  const nominationId = parseNominationPath(pathname);
+  useScrollRestoration();
+  useScrollToHashOnOpen(true);
+
+  if (isAdminPath(pathname)) {
+    return (
+      <AuthProvider>
+        <AdminPage />
+      </AuthProvider>
+    );
+  }
+
+  // One layout for both public screens, so the header and the snowfall survive navigation.
+  return (
+    <AuthProvider>
+      <RootLayout>
+        {nominationId === null ? (
+          <LandingPage />
+        ) : (
+          <NominationPage key={nominationId} nominationId={nominationId} />
+        )}
+      </RootLayout>
+    </AuthProvider>
+  );
 }

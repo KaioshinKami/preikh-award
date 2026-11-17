@@ -56,6 +56,15 @@ export async function deleteNominee(id: number): Promise<void> {
   await apiRequest(`/admin/nominees/${id}`, { method: 'DELETE' });
 }
 
+// Returns the URL to store in a nomination's imageUrl or a nominee's avatarUrl.
+export async function uploadImage(image: Blob): Promise<string> {
+  const { url } = await apiRequest<{ url: string }>('/admin/images', {
+    method: 'POST',
+    body: image,
+  });
+  return url;
+}
+
 export async function fetchApplications(status: ApplicationStatus): Promise<Application[]> {
   const { applications } = await apiRequest<{ applications: Application[] }>(
     `/admin/applications?status=${status}`,

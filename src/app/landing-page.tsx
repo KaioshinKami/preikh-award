@@ -1,15 +1,14 @@
 import { About } from '@/modules/about';
+import { Commission } from '@/modules/commission';
 import { Faq } from '@/modules/faq';
 import { Hero, HeroTicker } from '@/modules/hero';
-import { RootLayout } from '@/modules/layout';
 import { NominationsSection } from '@/modules/nominations';
-import { Commission } from '@/modules/commission';
 import { Tickets } from '@/modules/tickets';
 import { VotingStages } from '@/modules/voting-stages';
 
 export function LandingPage() {
   return (
-    <RootLayout>
+    <>
       <Hero />
       <HeroTicker />
       <About />
@@ -18,6 +17,6 @@ export function LandingPage() {
       <Tickets />
       <Faq />
       <Commission />
-    </RootLayout>
+    </>
   );
 }

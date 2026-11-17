@@ -11,6 +11,7 @@ import { adminRoutes } from './modules/admin/admin-routes.ts';
 import { applicationsRoutes } from './modules/applications/applications-routes.ts';
 import { authRoutes } from './modules/auth/auth-routes.ts';
 import { AUTH_COOKIE } from './modules/auth/session.ts';
+import { imagesRoutes } from './modules/images/images-routes.ts';
 import { nominationsRoutes } from './modules/nominations/nominations-routes.ts';
 import { votesRoutes } from './modules/votes/votes-routes.ts';
 
@@ -38,6 +39,7 @@ export async function buildApp({ sql, config, logger = true }: BuildAppOptions) 
 
   await app.register(authRoutes, { prefix: '/api/auth' });
   await app.register(nominationsRoutes, { prefix: '/api' });
+  await app.register(imagesRoutes, { prefix: '/api' });
   await app.register(votesRoutes, { prefix: '/api/votes' });
   await app.register(applicationsRoutes, { prefix: '/api/applications' });
   await app.register(adminRoutes, { prefix: '/api/admin' });

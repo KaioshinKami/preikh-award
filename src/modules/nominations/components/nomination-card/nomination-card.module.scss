@@ -1,0 +1,134 @@
+@use '@/shared/sass/mixins' as *;
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+  padding: 14px 8px 18px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  text-align: center;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.35s var(--ease-out);
+
+  @include from($breakpoint-sm) {
+    gap: 10px;
+    padding: 20px 18px 24px;
+  }
+
+  &:hover {
+    border-color: var(--color-border);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+    transform: translateY(-4px);
+  }
+
+  &:has(.link:focus-visible) {
+    outline: 2px solid var(--color-ice);
+    outline-offset: 3px;
+  }
+
+  @include reduced-motion {
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+.emblem {
+  max-width: 240px;
+  margin-bottom: 4px;
+  transition: transform 0.5s var(--ease-out);
+
+  .card:hover & {
+    transform: scale(1.05);
+  }
+
+  @include reduced-motion {
+    .card:hover & {
+      transform: none;
+    }
+  }
+}
+
+.title {
+  @include display-text;
+  font-size: clamp(15px, 2.2vw, 24px);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  background: linear-gradient(180deg, #fff 30%, #bfe6ff);
+  background-clip: text;
+  color: transparent;
+}
+
+.link {
+  // Stretched over the whole card, so any point of it opens the nomination.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-lg);
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.hint {
+  color: var(--color-text-muted);
+  font-size: 14px;
+
+  .card[data-voted='true'] & {
+    color: var(--color-aurora-teal);
+    font-weight: 600;
+  }
+
+  @include from($breakpoint-sm) {
+    font-size: 15px;
+  }
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  margin-top: auto;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  background: var(--gradient-ice);
+  color: var(--color-on-ice);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: 0 10px 30px -12px rgb(125 211 252 / 70%);
+  transition: box-shadow 0.3s ease;
+
+  @include from($breakpoint-sm) {
+    min-height: 46px;
+    padding: 10px 26px;
+    font-size: 13px;
+  }
+
+  .card:hover & {
+    box-shadow: 0 16px 40px -10px rgb(125 211 252 / 95%);
+  }
+
+  .card[data-voted='true'] & {
+    border-color: rgb(125 211 252 / 45%);
+    background: rgb(125 211 252 / 10%);
+    color: var(--color-frost);
+    box-shadow: none;
+  }
+}

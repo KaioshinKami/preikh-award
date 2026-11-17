@@ -1,0 +1,69 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  color: var(--color-frost);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.preview {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  overflow: hidden;
+  border: 1px dashed rgb(125 211 252 / 35%);
+  border-radius: var(--radius-sm);
+  background: rgb(5 9 20 / 60%);
+
+  &[data-shape='emblem'] {
+    width: 72px;
+    height: 72px;
+  }
+
+  &[data-shape='portrait'] {
+    width: 64px;
+    height: 80px;
+  }
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+
+  .preview[data-shape='emblem'] & {
+    object-fit: contain;
+  }
+
+  .preview[data-shape='portrait'] & {
+    object-fit: cover;
+  }
+}
+
+.empty {
+  padding: 4px;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.error {
+  color: #fca5a5;
+  font-size: 13px;
+}

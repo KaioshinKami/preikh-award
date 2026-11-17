@@ -12,6 +12,8 @@ export type Nomination = {
   title: string;
   category: string;
   description: string;
+  // The nomination's logo; a snowflake emblem is drawn when it is missing.
+  imageUrl: string | null;
   nominees: Nominee[];
 };
 

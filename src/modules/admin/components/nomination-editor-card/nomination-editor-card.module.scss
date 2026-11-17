@@ -16,6 +16,18 @@
   gap: 12px;
 }
 
+.logo {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.headerText {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
 .category {
   color: var(--color-ice);
   font-size: 12px;

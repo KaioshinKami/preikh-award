@@ -43,7 +43,8 @@ export function NominationEditorCard({ nomination, onChanged }: NominationEditor
         />
       ) : (
         <header className={styles.header}>
-          <div>
+          {nomination.imageUrl && <img className={styles.logo} src={nomination.imageUrl} alt='' />}
+          <div className={styles.headerText}>
             <p className={styles.category}>{nomination.category}</p>
             <h3 className={styles.title}>«{nomination.title}»</h3>
             {nomination.description && (

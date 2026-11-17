@@ -1,0 +1,211 @@
+@use '@/shared/sass/mixins' as *;
+
+$max-staggered-nominees: 10;
+
+.page {
+  padding-top: calc(var(--header-height) + 24px);
+  padding-bottom: 72px;
+
+  @include from($breakpoint-md) {
+    padding-top: calc(var(--header-height) + 40px);
+    padding-bottom: 112px;
+  }
+}
+
+.inner {
+  @include container;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.back {
+  align-self: flex-start;
+  color: var(--color-ice);
+  font-size: 15px;
+  font-weight: 600;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--color-frost);
+  }
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  animation: fade-up 0.5s var(--ease-out) both;
+
+  @include from($breakpoint-md) {
+    flex-direction: row;
+    gap: 40px;
+    text-align: start;
+  }
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+.emblem {
+  flex-shrink: 0;
+  width: min(220px, 60vw);
+
+  @include from($breakpoint-md) {
+    width: 240px;
+  }
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.meta {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  color: var(--color-ice);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+
+  @include from($breakpoint-md) {
+    justify-content: flex-start;
+  }
+}
+
+.counter {
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.title {
+  @include display-text;
+  font-size: clamp(28px, 5vw, 56px);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  background: linear-gradient(180deg, #fff 30%, #bfe6ff);
+  background-clip: text;
+  color: transparent;
+}
+
+.description {
+  max-width: 620px;
+  color: var(--color-text-muted);
+  font-size: 17px;
+}
+
+.notice,
+.error {
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 15px;
+}
+
+.notice {
+  border: 1px solid var(--color-border);
+  background: rgb(125 211 252 / 8%);
+  color: var(--color-frost);
+}
+
+.error {
+  border: 1px solid rgb(248 113 113 / 40%);
+  background: rgb(248 113 113 / 10%);
+  color: #fecaca;
+}
+
+.nominees {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+
+  @include from($breakpoint-md) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  @include from($breakpoint-lg) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.nominee {
+  animation: fade-up 0.5s var(--ease-out) both;
+
+  @for $index from 1 through $max-staggered-nominees {
+    &:nth-child(#{$index}) {
+      animation-delay: #{$index * 60}ms;
+    }
+  }
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+.pager {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+
+  @include from($breakpoint-sm) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.pagerLink {
+  @include frost-card;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 20px;
+  transition: transform 0.3s var(--ease-out);
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  &[data-direction='next'] {
+    text-align: end;
+
+    // Stays in the right column even when there is no "previous" link.
+    @include from($breakpoint-sm) {
+      grid-column: 2;
+    }
+  }
+
+  @include reduced-motion {
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+.pagerLabel {
+  color: var(--color-ice);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pagerTitle {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}

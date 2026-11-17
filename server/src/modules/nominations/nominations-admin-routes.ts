@@ -4,13 +4,26 @@ import { FOREIGN_KEY_VIOLATION, hasErrorCode, RESTRICT_VIOLATION } from '../../d
 import { listNominations } from './nominations-repository.ts';
 
 type IdParams = { id: number };
-type NominationBody = { title: string; category: string; description?: string };
+type NominationBody = {
+  title: string;
+  category: string;
+  description?: string;
+  imageUrl?: string | null;
+};
 type NomineeBody = { name: string; tagline?: string; avatarUrl?: string | null };
 
 const idParamsSchema = {
   type: 'object',
   required: ['id'],
   properties: { id: { type: 'integer', minimum: 1 } },
+};
+
+// A picture uploaded through /api/admin/images, or an external https image.
+// Nothing else, so a stored URL can't point at another scheme or site path.
+const imageUrlSchema = {
+  type: ['string', 'null'],
+  maxLength: 500,
+  pattern: '^(https://.+|/api/images/[0-9a-f-]{36})$',
 };
 
 const nominationSchema = {
@@ -23,6 +36,7 @@ const nominationSchema = {
       title: { type: 'string', minLength: 1, maxLength: 80 },
       category: { type: 'string', minLength: 1, maxLength: 80 },
       description: { type: 'string', maxLength: 400 },
+      imageUrl: imageUrlSchema,
     },
   },
 };
@@ -36,8 +50,7 @@ const nomineeSchema = {
     properties: {
       name: { type: 'string', minLength: 1, maxLength: 80 },
       tagline: { type: 'string', maxLength: 120 },
-      // Only https images, so a stored URL can't point at another scheme.
-      avatarUrl: { type: ['string', 'null'], pattern: '^https://', maxLength: 500 },
+      avatarUrl: imageUrlSchema,
     },
   },
 };
@@ -70,11 +83,11 @@ export async function nominationsAdminRoutes(app: FastifyInstance) {
     '/nominations',
     { schema: createNominationSchema },
     async (request, reply) => {
-      const { title, category, description = '' } = request.body;
+      const { title, category, description = '', imageUrl = null } = request.body;
       const [nomination] = await app.sql`
-      insert into nominations (title, category, description)
-      values (${requireText(title, 'Укажите название')}, ${requireText(category, 'Укажите категорию')}, ${description.trim()})
-      returning id, title, category, description
+      insert into nominations (title, category, description, image_url)
+      values (${requireText(title, 'Укажите название')}, ${requireText(category, 'Укажите категорию')}, ${description.trim()}, ${imageUrl})
+      returning id, title, category, description, image_url
     `;
       return reply.code(201).send({ nomination });
     },
@@ -84,14 +97,15 @@ export async function nominationsAdminRoutes(app: FastifyInstance) {
     '/nominations/:id',
     { schema: nominationSchema },
     async (request) => {
-      const { title, category, description = '' } = request.body;
+      const { title, category, description = '', imageUrl = null } = request.body;
       const rows = await app.sql`
       update nominations
       set title = ${requireText(title, 'Укажите название')},
           category = ${requireText(category, 'Укажите категорию')},
-          description = ${description.trim()}
+          description = ${description.trim()},
+          image_url = ${imageUrl}
       where id = ${request.params.id}
-      returning id, title, category, description
+      returning id, title, category, description, image_url
     `;
       assertFound(rows, 'Номинация не найдена');
       return { nomination: rows[0] };

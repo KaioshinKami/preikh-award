@@ -1,6 +1,7 @@
-import type { FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Button, TextField } from '@/shared/components';
 import type { NomineeInput } from '../../model/types';
+import { ImageField } from '../image-field/image-field';
 import styles from './nominee-form.module.scss';
 
 type NomineeFormProps = {
@@ -18,23 +19,30 @@ export function NomineeForm({
   onSubmit,
   onCancel,
 }: NomineeFormProps) {
+  const [isImageUploading, setIsImageUploading] = useState(false);
+  // Remounts the photo field after an add, so the next nominee starts without a photo.
+  const [resetCount, setResetCount] = useState(0);
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(form);
-    const avatarUrl = String(formData.get('avatarUrl') ?? '').trim();
+    const avatarUrl = String(formData.get('avatarUrl') ?? '');
     const isSaved = await onSubmit({
       name: String(formData.get('name') ?? '').trim(),
       tagline: String(formData.get('tagline') ?? '').trim(),
       avatarUrl: avatarUrl || null,
     });
-    if (isSaved && !initialValues) form.reset();
+    if (isSaved && !initialValues) {
+      form.reset();
+      setResetCount((count) => count + 1);
+    }
   };
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       <TextField
-        label='Имя'
+        label='Имя и фамилия'
         name='name'
         required
         maxLength={80}
@@ -46,16 +54,16 @@ export function NomineeForm({
         maxLength={120}
         defaultValue={initialValues?.tagline}
       />
-      <TextField
-        label='Фото (https-ссылка)'
+      <ImageField
+        key={resetCount}
+        label='Фото'
         name='avatarUrl'
-        type='url'
-        pattern='https://.*'
-        maxLength={500}
-        defaultValue={initialValues?.avatarUrl ?? ''}
+        defaultValue={initialValues?.avatarUrl ?? null}
+        shape='portrait'
+        onUploadingChange={setIsImageUploading}
       />
       <div className={styles.actions}>
-        <Button type='submit' size='small' disabled={isSubmitting}>
+        <Button type='submit' size='small' disabled={isSubmitting || isImageUploading}>
           {submitLabel}
         </Button>
         {onCancel && (

@@ -1,5 +1,7 @@
+import type { MouseEvent } from 'react';
 import { AccountControls } from '@/modules/auth';
 import { ButtonLink, Logo } from '@/shared/components';
+import { handleLinkClick } from '@/shared/lib/navigation';
 import { NAV_LINKS } from '../../model/nav-links';
 import { useIsScrolled } from './use-is-scrolled';
 import { useMobileMenu } from './use-mobile-menu';
@@ -13,10 +15,20 @@ export function Header() {
   const { isMenuOpen, toggleMenu, closeMenu } = useMobileMenu();
   const menuLabel = isMenuOpen ? 'Закрыть меню' : 'Открыть меню';
 
+  const handleNavClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    closeMenu();
+    handleLinkClick(event);
+  };
+
   return (
     <header className={styles.header} data-solid={isScrolled || isMenuOpen}>
       <div className={styles.inner}>
-        <a href='#top' className={styles.logoLink} aria-label='PREIKH AWARD — в начало страницы'>
+        <a
+          href='/#top'
+          className={styles.logoLink}
+          aria-label='PREIKH AWARD — на главную'
+          onClick={handleLinkClick}
+        >
           <Logo />
         </a>
 
@@ -24,7 +36,7 @@ export function Header() {
           <ul className={styles.navList}>
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
-                <a className={styles.navLink} href={link.href} onClick={closeMenu}>
+                <a className={styles.navLink} href={link.href} onClick={handleNavClick}>
                   {link.label}
                 </a>
               </li>
@@ -32,7 +44,7 @@ export function Header() {
           </ul>
         </nav>
 
-        <ButtonLink href='#nominations' className={styles.cta}>
+        <ButtonLink href='/#nominations' className={styles.cta} onClick={handleLinkClick}>
           Голосовать
         </ButtonLink>
 

@@ -13,6 +13,7 @@ export type NominationRow = {
   title: string;
   category: string;
   description: string;
+  imageUrl: string | null;
   nominees: NomineeRow[];
 };
 
@@ -24,6 +25,7 @@ export function listNominations(sql: Sql): Promise<NominationRow[]> {
       n.title,
       n.category,
       n.description,
+      n.image_url,
       coalesce(
         json_agg(
           json_build_object(

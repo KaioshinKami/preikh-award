@@ -9,6 +9,7 @@ export class ApiRequestError extends Error {
 
 type RequestOptions = {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  // A Blob (a file) is sent as is with its own type; anything else is sent as JSON.
   body?: unknown;
 };
 
@@ -20,11 +21,12 @@ export async function apiRequest<Response>(
   { method = 'GET', body }: RequestOptions = {},
 ): Promise<Response> {
   const hasBody = body !== undefined;
+  const isFile = body instanceof Blob;
   const response = await fetch(`/api${path}`, {
     method,
     credentials: 'same-origin',
-    headers: hasBody ? { 'Content-Type': 'application/json' } : undefined,
-    body: hasBody ? JSON.stringify(body) : undefined,
+    headers: hasBody ? { 'Content-Type': isFile ? body.type : 'application/json' } : undefined,
+    body: isFile ? body : hasBody ? JSON.stringify(body) : undefined,
   }).catch(() => {
     throw new ApiRequestError(0, NETWORK_ERROR_MESSAGE);
   });

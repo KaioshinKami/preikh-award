@@ -1,6 +1,7 @@
 import { EVENT_INFO } from '@/modules/event';
 import { NAV_LINKS } from '@/modules/header';
 import { Logo } from '@/shared/components';
+import { handleLinkClick } from '@/shared/lib/navigation';
 import styles from './footer.module.scss';
 
 export function Footer() {
@@ -18,7 +19,7 @@ export function Footer() {
           <ul className={styles.links}>
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
-                <a className={styles.link} href={link.href}>
+                <a className={styles.link} href={link.href} onClick={handleLinkClick}>
                   {link.label}
                 </a>
               </li>

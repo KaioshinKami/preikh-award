@@ -11,6 +11,7 @@ export type AdminNomination = {
   title: string;
   category: string;
   description: string;
+  imageUrl: string | null;
   nominees: AdminNominee[];
 };
 
@@ -87,6 +88,7 @@ export type NominationInput = {
   title: string;
   category: string;
   description: string;
+  imageUrl: string | null;
 };
 
 export type NomineeInput = {

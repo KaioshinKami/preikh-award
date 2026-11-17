@@ -7,3 +7,13 @@
 .inner {
   @include container;
 }
+
+.notice {
+  margin-bottom: 24px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgb(125 211 252 / 8%);
+  color: var(--color-frost);
+  font-size: 15px;
+}
