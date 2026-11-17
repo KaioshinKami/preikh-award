@@ -5,6 +5,8 @@ import Fastify from 'fastify';
 import { handleError } from './api-error.ts';
 import type { Config } from './config.ts';
 import type { Sql } from './db/sql.ts';
+// Brings in the sql/config/currentUser decorations; Vercel type-checks only what server.ts imports.
+import type {} from './fastify-types.ts';
 import { adminRoutes } from './modules/admin/admin-routes.ts';
 import { applicationsRoutes } from './modules/applications/applications-routes.ts';
 import { authRoutes } from './modules/auth/auth-routes.ts';
