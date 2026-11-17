@@ -14,4 +14,9 @@ const shutdown = async () => {
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
-await app.listen({ port: config.port, host: '127.0.0.1' });
+// Not awaited: on Vercel the runtime intercepts listen() and finishes it only after this module
+// has loaded, so a top-level await here would never resolve and every request would time out.
+app.listen({ port: config.port, host: '127.0.0.1' }).catch((error: unknown) => {
+  app.log.error(error);
+  process.exit(1);
+});
