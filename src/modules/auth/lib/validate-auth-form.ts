@@ -1,5 +1,12 @@
 import type { AuthMode } from '../model/types';
 
+export type AuthFormErrorTexts = {
+  nameTooShort: (minLength: number) => string;
+  invalidEmail: string;
+  passwordTooShort: (minLength: number) => string;
+  passwordRequired: string;
+};
+
 export type AuthFormValues = {
   name: string;
   email: string;
@@ -21,18 +28,22 @@ export function readAuthForm(formData: FormData): AuthFormValues {
   };
 }
 
-export function validateAuthForm(values: AuthFormValues, mode: AuthMode): AuthFormErrors {
+export function validateAuthForm(
+  values: AuthFormValues,
+  mode: AuthMode,
+  texts: AuthFormErrorTexts,
+): AuthFormErrors {
   const errors: AuthFormErrors = {};
   const isRegister = mode === 'register';
 
   if (isRegister && values.name.length < MIN_NAME_LENGTH) {
-    errors.name = `Введите имя — минимум ${MIN_NAME_LENGTH} символа`;
+    errors.name = texts.nameTooShort(MIN_NAME_LENGTH);
   }
-  if (!EMAIL_PATTERN.test(values.email)) errors.email = 'Введите корректный email';
+  if (!EMAIL_PATTERN.test(values.email)) errors.email = texts.invalidEmail;
   if (isRegister && values.password.length < MIN_PASSWORD_LENGTH) {
-    errors.password = `Пароль должен быть не короче ${MIN_PASSWORD_LENGTH} символов`;
+    errors.password = texts.passwordTooShort(MIN_PASSWORD_LENGTH);
   }
-  if (!isRegister && !values.password) errors.password = 'Введите пароль';
+  if (!isRegister && !values.password) errors.password = texts.passwordRequired;
 
   return errors;
 }

@@ -1,5 +1,7 @@
 import { Reveal } from '@/shared/components';
+import { useMessages } from '@/shared/i18n';
 import { getNominationAnchorId } from '../../lib/nomination-path';
+import { NOMINATIONS_MESSAGES } from '../../model/nominations-messages';
 import type { Nomination } from '../../model/types';
 import { useVotes } from '../../model/use-votes';
 import { NominationCard } from '../nomination-card/nomination-card';
@@ -10,10 +12,11 @@ type NominationsGridProps = {
 };
 
 export function NominationsGrid({ nominations }: NominationsGridProps) {
+  const t = useMessages(NOMINATIONS_MESSAGES);
   const { votes } = useVotes();
 
   if (nominations.length === 0) {
-    return <p className={styles.notice}>Номинации появятся совсем скоро.</p>;
+    return <p className={styles.notice}>{t.section.empty}</p>;
   }
 
   return (

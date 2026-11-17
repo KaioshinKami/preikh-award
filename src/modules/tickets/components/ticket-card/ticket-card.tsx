@@ -1,23 +1,29 @@
+import { LOCALE_TAGS, useLocale } from '@/shared/i18n';
 import type { TicketTier } from '../../model/ticket-tiers';
 import styles from './ticket-card.module.scss';
 
-const priceFormat = new Intl.NumberFormat('ru-RU', {
-  style: 'currency',
-  currency: 'KZT',
-  currencyDisplay: 'narrowSymbol',
-  maximumFractionDigits: 0,
-});
-
 type TicketCardProps = {
   tier: TicketTier;
+  featuredBadge: string;
 };
 
-export function TicketCard({ tier }: TicketCardProps) {
+function formatPrice(priceKzt: number, localeTag: string): string {
+  return new Intl.NumberFormat(localeTag, {
+    style: 'currency',
+    currency: 'KZT',
+    currencyDisplay: 'narrowSymbol',
+    maximumFractionDigits: 0,
+  }).format(priceKzt);
+}
+
+export function TicketCard({ tier, featuredBadge }: TicketCardProps) {
+  const locale = useLocale();
+
   return (
     <article className={styles.card} data-featured={Boolean(tier.isFeatured)}>
-      {tier.isFeatured && <span className={styles.badge}>Выбор зрителей</span>}
+      {tier.isFeatured && <span className={styles.badge}>{featuredBadge}</span>}
       <h3 className={styles.name}>{tier.name}</h3>
-      <p className={styles.price}>{priceFormat.format(tier.priceKzt)}</p>
+      <p className={styles.price}>{formatPrice(tier.priceKzt, LOCALE_TAGS[locale])}</p>
       <ul className={styles.perks}>
         {tier.perks.map((perk) => (
           <li key={perk} className={styles.perk}>

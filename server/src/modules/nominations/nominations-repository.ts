@@ -1,10 +1,12 @@
 import type { Sql } from '../../db/sql.ts';
+import type { NominationTranslations, NomineeTranslations } from './translations.ts';
 
 export type NomineeRow = {
   id: number;
   name: string;
   tagline: string;
   avatarUrl: string | null;
+  translations: NomineeTranslations;
   votes: number;
 };
 
@@ -14,6 +16,7 @@ export type NominationRow = {
   category: string;
   description: string;
   imageUrl: string | null;
+  translations: NominationTranslations;
   nominees: NomineeRow[];
 };
 
@@ -26,6 +29,7 @@ export function listNominations(sql: Sql): Promise<NominationRow[]> {
       n.category,
       n.description,
       n.image_url,
+      n.translations,
       coalesce(
         json_agg(
           json_build_object(
@@ -33,6 +37,7 @@ export function listNominations(sql: Sql): Promise<NominationRow[]> {
             'name', e.name,
             'tagline', e.tagline,
             'avatarUrl', e.avatar_url,
+            'translations', e.translations,
             'votes', (select count(*) from votes v where v.nominee_id = e.id)
           )
           order by e.id

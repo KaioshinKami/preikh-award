@@ -1,8 +1,17 @@
+// Kazakh and English versions of the texts; the main fields hold Russian.
+export type TranslationLocale = 'kk' | 'en';
+export type Translations<Field extends string> = Partial<
+  Record<TranslationLocale, Partial<Record<Field, string>>>
+>;
+export type NominationTranslations = Translations<'title' | 'category' | 'description'>;
+export type NomineeTranslations = Translations<'name' | 'tagline'>;
+
 export type AdminNominee = {
   id: number;
   name: string;
   tagline: string;
   avatarUrl: string | null;
+  translations: NomineeTranslations;
   votes: number;
 };
 
@@ -12,6 +21,7 @@ export type AdminNomination = {
   category: string;
   description: string;
   imageUrl: string | null;
+  translations: NominationTranslations;
   nominees: AdminNominee[];
 };
 
@@ -89,10 +99,12 @@ export type NominationInput = {
   category: string;
   description: string;
   imageUrl: string | null;
+  translations: NominationTranslations;
 };
 
 export type NomineeInput = {
   name: string;
   tagline: string;
   avatarUrl: string | null;
+  translations: NomineeTranslations;
 };

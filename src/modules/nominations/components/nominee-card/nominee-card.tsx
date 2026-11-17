@@ -1,36 +1,40 @@
+import { useLocale, useMessages } from '@/shared/i18n';
 import { formatVotes } from '../../lib/format-votes';
 import type { NomineeResult } from '../../lib/get-vote-results';
+import { localize, NOMINEE_FIELDS } from '../../lib/localize';
+import { NOMINATIONS_MESSAGES } from '../../model/nominations-messages';
 import type { Nominee, VoteStatus } from '../../model/types';
 import { NomineePhoto } from '../nominee-photo/nominee-photo';
 import styles from './nominee-card.module.scss';
-
-const VOTE_LABELS: Record<VoteStatus, string> = {
-  available: 'Голосовать',
-  pending: 'Отправляем…',
-  voted: 'Ваш голос',
-  locked: 'Голос отдан',
-  closed: 'Голосование закрыто',
-};
 
 type NomineeCardProps = {
   nominee: Nominee;
   result?: NomineeResult;
   voteStatus: VoteStatus;
-  onVote: (nominee: Nominee) => void;
+  // Gets the nominee and the name shown to the visitor (for the confirmation).
+  onVote: (nominee: Nominee, displayName: string) => void;
 };
 
 export function NomineeCard({ nominee, result, voteStatus, onVote }: NomineeCardProps) {
-  const handleVoteClick = () => onVote(nominee);
+  const locale = useLocale();
+  const voteLabels = useMessages(NOMINATIONS_MESSAGES).voteLabels;
+  const { name, tagline } = localize(nominee, NOMINEE_FIELDS, locale);
+  const handleVoteClick = () => onVote(nominee, name);
 
   return (
     <article className={styles.card} data-voted={voteStatus === 'voted'}>
       <div className={styles.media}>
-        <NomineePhoto name={nominee.name} avatarUrl={nominee.avatarUrl} className={styles.photo} />
+        <NomineePhoto
+          name={name}
+          colorSeed={nominee.name}
+          avatarUrl={nominee.avatarUrl}
+          className={styles.photo}
+        />
       </div>
 
       <div className={styles.body}>
-        <h3 className={styles.name}>{nominee.name}</h3>
-        {nominee.tagline && <p className={styles.tagline}>{nominee.tagline}</p>}
+        <h3 className={styles.name}>{name}</h3>
+        {tagline && <p className={styles.tagline}>{tagline}</p>}
 
         {result && (
           <div className={styles.share}>
@@ -39,7 +43,7 @@ export function NomineeCard({ nominee, result, voteStatus, onVote }: NomineeCard
             </div>
             <p className={styles.shareLabel}>
               <span className={styles.percent}>{Math.round(result.share * 100)}%</span>
-              <span>{formatVotes(result.votes)}</span>
+              <span>{formatVotes(result.votes, locale)}</span>
             </p>
           </div>
         )}
@@ -50,8 +54,8 @@ export function NomineeCard({ nominee, result, voteStatus, onVote }: NomineeCard
           disabled={voteStatus !== 'available'}
           onClick={handleVoteClick}
         >
-          {VOTE_LABELS[voteStatus]}
-          <span className='visually-hidden'>: {nominee.name}</span>
+          {voteLabels[voteStatus]}
+          <span className='visually-hidden'>: {name}</span>
         </button>
       </div>
     </article>

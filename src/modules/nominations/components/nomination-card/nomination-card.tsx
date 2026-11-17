@@ -1,5 +1,8 @@
+import { useLocale, useMessages } from '@/shared/i18n';
 import { handleLinkClick } from '@/shared/lib/navigation';
+import { localize, NOMINATION_FIELDS } from '../../lib/localize';
 import { getNominationPath } from '../../lib/nomination-path';
+import { NOMINATIONS_MESSAGES } from '../../model/nominations-messages';
 import type { Nomination } from '../../model/types';
 import { NominationEmblem } from '../nomination-emblem/nomination-emblem';
 import styles from './nomination-card.module.scss';
@@ -11,6 +14,9 @@ type NominationCardProps = {
 
 // The whole card is one link to the nomination page; the "button" is only its visual label.
 export function NominationCard({ nomination, isVoted }: NominationCardProps) {
+  const t = useMessages(NOMINATIONS_MESSAGES).card;
+  const { title } = localize(nomination, NOMINATION_FIELDS, useLocale());
+
   return (
     <article className={styles.card} data-voted={isVoted}>
       <NominationEmblem imageUrl={nomination.imageUrl} className={styles.emblem} />
@@ -20,12 +26,12 @@ export function NominationCard({ nomination, isVoted }: NominationCardProps) {
           href={getNominationPath(nomination.id)}
           onClick={handleLinkClick}
         >
-          {nomination.title}
+          {title}
         </a>
       </h3>
-      <p className={styles.hint}>{isVoted ? 'Голос отдан' : 'Сделай выбор'}</p>
+      <p className={styles.hint}>{isVoted ? t.voted : t.makeChoice}</p>
       <span className={styles.cta} aria-hidden='true'>
-        {isVoted ? 'Смотреть' : 'Проголосовать'}
+        {isVoted ? t.view : t.vote}
       </span>
     </article>
   );

@@ -1,3 +1,6 @@
+import { getMessages } from '@/shared/i18n';
+import { ERROR_MESSAGES } from './error-messages';
+
 export class ApiRequestError extends Error {
   status: number;
 
@@ -13,7 +16,18 @@ type RequestOptions = {
   body?: unknown;
 };
 
-const NETWORK_ERROR_MESSAGE = 'Сервер недоступен. Попробуйте позже';
+type ErrorPayload = { error?: string; code?: string } | null;
+
+// The visitor's language for a coded error, else the server's own text, else a generic one.
+function describeError(payload: ErrorPayload): string {
+  const messages = getMessages(ERROR_MESSAGES);
+  const code = payload?.code;
+  const translated =
+    code && Object.hasOwn(messages.codes, code)
+      ? messages.codes[code as keyof typeof messages.codes]
+      : undefined;
+  return translated ?? payload?.error ?? messages.unknown;
+}
 
 // The session lives in an httpOnly cookie, so requests only need same-origin credentials.
 export async function apiRequest<Response>(
@@ -28,18 +42,17 @@ export async function apiRequest<Response>(
     headers: hasBody ? { 'Content-Type': isFile ? body.type : 'application/json' } : undefined,
     body: isFile ? body : hasBody ? JSON.stringify(body) : undefined,
   }).catch(() => {
-    throw new ApiRequestError(0, NETWORK_ERROR_MESSAGE);
+    throw new ApiRequestError(0, getMessages(ERROR_MESSAGES).network);
   });
 
   const payload: unknown = await response.json().catch(() => null);
   if (!response.ok) {
-    const serverMessage = (payload as { error?: string } | null)?.error;
-    throw new ApiRequestError(response.status, serverMessage ?? NETWORK_ERROR_MESSAGE);
+    throw new ApiRequestError(response.status, describeError(payload as ErrorPayload));
   }
 
   return payload as Response;
 }
 
 export function getErrorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : 'Что-то пошло не так';
+  return error instanceof Error ? error.message : getMessages(ERROR_MESSAGES).unknown;
 }

@@ -1,8 +1,10 @@
 import type { MouseEvent } from 'react';
 import { AccountControls } from '@/modules/auth';
-import { ButtonLink, Logo } from '@/shared/components';
+import { ButtonLink, LanguageSwitcher, Logo } from '@/shared/components';
+import { useMessages } from '@/shared/i18n';
 import { handleLinkClick } from '@/shared/lib/navigation';
-import { NAV_LINKS } from '../../model/nav-links';
+import { HEADER_MESSAGES } from '../../model/header-messages';
+import { useNavLinks } from '../../model/nav-links';
 import { useIsScrolled } from './use-is-scrolled';
 import { useMobileMenu } from './use-mobile-menu';
 import styles from './header.module.scss';
@@ -11,9 +13,11 @@ const SCROLL_OFFSET = 24;
 const NAV_ID = 'site-nav';
 
 export function Header() {
+  const t = useMessages(HEADER_MESSAGES);
+  const navLinks = useNavLinks();
   const isScrolled = useIsScrolled(SCROLL_OFFSET);
   const { isMenuOpen, toggleMenu, closeMenu } = useMobileMenu();
-  const menuLabel = isMenuOpen ? 'Закрыть меню' : 'Открыть меню';
+  const menuLabel = isMenuOpen ? t.closeMenu : t.openMenu;
 
   const handleNavClick = (event: MouseEvent<HTMLAnchorElement>) => {
     closeMenu();
@@ -26,15 +30,15 @@ export function Header() {
         <a
           href='/#top'
           className={styles.logoLink}
-          aria-label='PREIKH AWARD — на главную'
+          aria-label={t.homeLabel}
           onClick={handleLinkClick}
         >
           <Logo />
         </a>
 
-        <nav id={NAV_ID} className={styles.nav} data-open={isMenuOpen} aria-label='Основное меню'>
+        <nav id={NAV_ID} className={styles.nav} data-open={isMenuOpen} aria-label={t.navLabel}>
           <ul className={styles.navList}>
-            {NAV_LINKS.map((link) => (
+            {navLinks.map((link) => (
               <li key={link.href}>
                 <a className={styles.navLink} href={link.href} onClick={handleNavClick}>
                   {link.label}
@@ -42,10 +46,11 @@ export function Header() {
               </li>
             ))}
           </ul>
+          <LanguageSwitcher className={styles.languages} />
         </nav>
 
         <ButtonLink href='/#nominations' className={styles.cta} onClick={handleLinkClick}>
-          Голосовать
+          {t.vote}
         </ButtonLink>
 
         <AccountControls />

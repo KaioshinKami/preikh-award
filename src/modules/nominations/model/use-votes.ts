@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/modules/auth';
 import { getErrorMessage } from '@/shared/api/api';
+import { useMessages } from '@/shared/i18n';
 import { fetchMyVotes, submitVote } from '../api/nominations-api';
+import { NOMINATIONS_MESSAGES } from './nominations-messages';
 import type { Nominee, VotesByNomination } from './types';
 
 // Votes of the signed-in viewer. A vote is final, so it is confirmed before it is sent.
 export function useVotes() {
   const { user, openAuthDialog } = useAuth();
+  const t = useMessages(NOMINATIONS_MESSAGES);
   const [votes, setVotes] = useState<VotesByNomination>({});
   const [pendingNomineeId, setPendingNomineeId] = useState<number | null>(null);
   const [voteError, setVoteError] = useState<string | null>(null);
@@ -23,14 +26,12 @@ export function useVotes() {
     else setVotes({});
   }, [user, refreshVotes]);
 
-  const castVote = async (nominationId: number, nominee: Nominee) => {
+  const castVote = async (nominationId: number, nominee: Nominee, displayName: string) => {
     if (!user) {
       openAuthDialog('login');
       return;
     }
-    const isConfirmed = window.confirm(
-      `Отдать голос за «${nominee.name}»? Изменить его после отправки будет нельзя.`,
-    );
+    const isConfirmed = window.confirm(t.confirmVote(displayName));
     if (!isConfirmed) return;
 
     setVoteError(null);

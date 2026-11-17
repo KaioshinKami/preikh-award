@@ -1,4 +1,6 @@
 import { useEffect, useRef, type MouseEvent } from 'react';
+import { useMessages } from '@/shared/i18n';
+import { AUTH_MESSAGES } from '../../model/auth-messages';
 import type { AuthMode } from '../../model/types';
 import { AuthForm } from '../auth-form/auth-form';
 import styles from './auth-dialog.module.scss';
@@ -9,27 +11,10 @@ type AuthDialogProps = {
   onClose: () => void;
 };
 
-const DIALOG_COPY: Record<
-  AuthMode,
-  { title: string; lead: string; switchText: string; switchAction: string }
-> = {
-  login: {
-    title: 'Вход',
-    lead: 'Войдите, чтобы голосовать и предлагать номинантов.',
-    switchText: 'Нет аккаунта?',
-    switchAction: 'Зарегистрироваться',
-  },
-  register: {
-    title: 'Регистрация',
-    lead: 'Аккаунт нужен, чтобы голосовать и предлагать номинантов.',
-    switchText: 'Уже есть аккаунт?',
-    switchAction: 'Войти',
-  },
-};
-
 export function AuthDialog({ mode, onModeChange, onClose }: AuthDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const copy = DIALOG_COPY[mode];
+  const t = useMessages(AUTH_MESSAGES);
+  const copy = t.dialog[mode];
   const otherMode: AuthMode = mode === 'login' ? 'register' : 'login';
 
   useEffect(() => {
@@ -51,7 +36,7 @@ export function AuthDialog({ mode, onModeChange, onClose }: AuthDialogProps) {
       onClick={handleBackdropClick}
     >
       <div className={styles.content}>
-        <button type='button' className={styles.close} aria-label='Закрыть' onClick={handleClose}>
+        <button type='button' className={styles.close} aria-label={t.close} onClick={handleClose}>
           ×
         </button>
         <h2 id='auth-dialog-title' className={styles.title}>

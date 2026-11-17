@@ -2,6 +2,12 @@ import type { FastifyInstance } from 'fastify';
 import { ApiError } from '../../api-error.ts';
 import { FOREIGN_KEY_VIOLATION, hasErrorCode, RESTRICT_VIOLATION } from '../../db/sql.ts';
 import { listNominations } from './nominations-repository.ts';
+import {
+  cleanTranslations,
+  translationsSchema,
+  type NominationTranslations,
+  type NomineeTranslations,
+} from './translations.ts';
 
 type IdParams = { id: number };
 type NominationBody = {
@@ -9,8 +15,14 @@ type NominationBody = {
   category: string;
   description?: string;
   imageUrl?: string | null;
+  translations?: NominationTranslations;
 };
-type NomineeBody = { name: string; tagline?: string; avatarUrl?: string | null };
+type NomineeBody = {
+  name: string;
+  tagline?: string;
+  avatarUrl?: string | null;
+  translations?: NomineeTranslations;
+};
 
 const idParamsSchema = {
   type: 'object',
@@ -37,6 +49,7 @@ const nominationSchema = {
       category: { type: 'string', minLength: 1, maxLength: 80 },
       description: { type: 'string', maxLength: 400 },
       imageUrl: imageUrlSchema,
+      translations: translationsSchema({ title: 80, category: 80, description: 400 }),
     },
   },
 };
@@ -51,6 +64,7 @@ const nomineeSchema = {
       name: { type: 'string', minLength: 1, maxLength: 80 },
       tagline: { type: 'string', maxLength: 120 },
       avatarUrl: imageUrlSchema,
+      translations: translationsSchema({ name: 80, tagline: 120 }),
     },
   },
 };
@@ -83,11 +97,11 @@ export async function nominationsAdminRoutes(app: FastifyInstance) {
     '/nominations',
     { schema: createNominationSchema },
     async (request, reply) => {
-      const { title, category, description = '', imageUrl = null } = request.body;
+      const { title, category, description = '', imageUrl = null, translations } = request.body;
       const [nomination] = await app.sql`
-      insert into nominations (title, category, description, image_url)
-      values (${requireText(title, 'Укажите название')}, ${requireText(category, 'Укажите категорию')}, ${description.trim()}, ${imageUrl})
-      returning id, title, category, description, image_url
+      insert into nominations (title, category, description, image_url, translations)
+      values (${requireText(title, 'Укажите название')}, ${requireText(category, 'Укажите категорию')}, ${description.trim()}, ${imageUrl}, ${app.sql.json(cleanTranslations(translations))})
+      returning id, title, category, description, image_url, translations
     `;
       return reply.code(201).send({ nomination });
     },
@@ -97,15 +111,16 @@ export async function nominationsAdminRoutes(app: FastifyInstance) {
     '/nominations/:id',
     { schema: nominationSchema },
     async (request) => {
-      const { title, category, description = '', imageUrl = null } = request.body;
+      const { title, category, description = '', imageUrl = null, translations } = request.body;
       const rows = await app.sql`
       update nominations
       set title = ${requireText(title, 'Укажите название')},
           category = ${requireText(category, 'Укажите категорию')},
           description = ${description.trim()},
-          image_url = ${imageUrl}
+          image_url = ${imageUrl},
+          translations = ${app.sql.json(cleanTranslations(translations))}
       where id = ${request.params.id}
-      returning id, title, category, description, image_url
+      returning id, title, category, description, image_url, translations
     `;
       assertFound(rows, 'Номинация не найдена');
       return { nomination: rows[0] };
@@ -128,12 +143,12 @@ export async function nominationsAdminRoutes(app: FastifyInstance) {
     '/nominations/:id/nominees',
     { schema: nomineeSchema },
     async (request, reply) => {
-      const { name, tagline = '', avatarUrl = null } = request.body;
+      const { name, tagline = '', avatarUrl = null, translations } = request.body;
       try {
         const [nominee] = await app.sql`
-        insert into nominees (nomination_id, name, tagline, avatar_url)
-        values (${request.params.id}, ${requireText(name, 'Укажите имя')}, ${tagline.trim()}, ${avatarUrl})
-        returning id, name, tagline, avatar_url
+        insert into nominees (nomination_id, name, tagline, avatar_url, translations)
+        values (${request.params.id}, ${requireText(name, 'Укажите имя')}, ${tagline.trim()}, ${avatarUrl}, ${app.sql.json(cleanTranslations(translations))})
+        returning id, name, tagline, avatar_url, translations
       `;
         return reply.code(201).send({ nominee });
       } catch (error) {
@@ -148,12 +163,13 @@ export async function nominationsAdminRoutes(app: FastifyInstance) {
     '/nominees/:id',
     { schema: nomineeSchema },
     async (request) => {
-      const { name, tagline = '', avatarUrl = null } = request.body;
+      const { name, tagline = '', avatarUrl = null, translations } = request.body;
       const rows = await app.sql`
       update nominees
-      set name = ${requireText(name, 'Укажите имя')}, tagline = ${tagline.trim()}, avatar_url = ${avatarUrl}
+      set name = ${requireText(name, 'Укажите имя')}, tagline = ${tagline.trim()}, avatar_url = ${avatarUrl},
+          translations = ${app.sql.json(cleanTranslations(translations))}
       where id = ${request.params.id}
-      returning id, name, tagline, avatar_url
+      returning id, name, tagline, avatar_url, translations
     `;
       assertFound(rows, 'Номинант не найден');
       return { nominee: rows[0] };

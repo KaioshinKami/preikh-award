@@ -44,8 +44,10 @@
     display: block;
   }
 
-  @include from($breakpoint-md) {
-    display: block;
+  @include from($breakpoint-lg) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     position: static;
     padding: 0;
     border: 0;
@@ -58,7 +60,7 @@
   flex-direction: column;
   gap: 4px;
 
-  @include from($breakpoint-md) {
+  @include from($breakpoint-lg) {
     flex-direction: row;
   }
 }
@@ -80,7 +82,7 @@
     color: var(--color-text);
   }
 
-  @include from($breakpoint-md) {
+  @include from($breakpoint-lg) {
     min-height: 44px;
     font-size: 15px;
   }
@@ -106,7 +108,7 @@
   border-radius: var(--radius-sm);
   background: rgb(125 211 252 / 6%);
 
-  @include from($breakpoint-md) {
+  @include from($breakpoint-lg) {
     display: none;
   }
 }
@@ -123,5 +125,14 @@
 
   .burger[aria-expanded='true'] &:last-child {
     transform: translateY(-4px) rotate(-45deg);
+  }
+}
+
+// In the mobile menu it sits under the links; in the desktop row it ends the menu.
+.languages {
+  margin: 12px 14px 0;
+
+  @include from($breakpoint-lg) {
+    margin: 0 0 0 4px;
   }
 }

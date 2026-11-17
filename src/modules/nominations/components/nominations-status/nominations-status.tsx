@@ -1,4 +1,6 @@
 import { SnowflakeIcon } from '@/shared/components';
+import { useMessages } from '@/shared/i18n';
+import { NOMINATIONS_MESSAGES } from '../../model/nominations-messages';
 import styles from './nominations-status.module.scss';
 
 type NominationsStatusProps = {
@@ -7,6 +9,7 @@ type NominationsStatusProps = {
 };
 
 export function NominationsStatus({ message, onRetry }: NominationsStatusProps) {
+  const t = useMessages(NOMINATIONS_MESSAGES);
   const iconClassName = onRetry ? styles.icon : `${styles.icon} ${styles.spinning}`;
 
   return (
@@ -15,7 +18,7 @@ export function NominationsStatus({ message, onRetry }: NominationsStatusProps) 
       <p>{message}</p>
       {onRetry && (
         <button type='button' className={styles.retry} onClick={onRetry}>
-          Попробовать снова
+          {t.retry}
         </button>
       )}
     </div>

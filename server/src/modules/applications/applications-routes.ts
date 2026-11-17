@@ -28,7 +28,7 @@ export async function applicationsRoutes(app: FastifyInstance) {
     { schema: applicationSchema, config: APPLICATION_RATE_LIMIT },
     async (request, reply) => {
       const nomineeName = request.body.nomineeName.trim();
-      if (!nomineeName) throw new ApiError(400, 'Укажите имя номинанта');
+      if (!nomineeName) throw new ApiError(400, 'Укажите имя номинанта', 'nominee_name_required');
 
       try {
         await app.sql`
@@ -42,7 +42,7 @@ export async function applicationsRoutes(app: FastifyInstance) {
         `;
       } catch (error) {
         if (hasErrorCode(error, FOREIGN_KEY_VIOLATION)) {
-          throw new ApiError(400, 'Такой номинации нет');
+          throw new ApiError(400, 'Такой номинации нет', 'nomination_not_found');
         }
         throw error;
       }

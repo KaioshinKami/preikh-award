@@ -56,7 +56,8 @@ export async function authRoutes(app: FastifyInstance) {
     { schema: registerSchema, config: CREDENTIALS_RATE_LIMIT },
     async (request, reply) => {
       const name = request.body.name.trim();
-      if (name.length < MIN_NAME_LENGTH) throw new ApiError(400, 'Имя слишком короткое');
+      if (name.length < MIN_NAME_LENGTH)
+        throw new ApiError(400, 'Имя слишком короткое', 'name_too_short');
 
       const passwordHash = await hashPassword(request.body.password);
       let user: SessionUser;
@@ -68,7 +69,7 @@ export async function authRoutes(app: FastifyInstance) {
         `;
       } catch (error) {
         if (hasErrorCode(error, UNIQUE_VIOLATION)) {
-          throw new ApiError(409, 'Этот email уже зарегистрирован');
+          throw new ApiError(409, 'Этот email уже зарегистрирован', 'email_taken');
         }
         throw error;
       }
@@ -90,7 +91,8 @@ export async function authRoutes(app: FastifyInstance) {
         request.body.password,
         account?.passwordHash ?? DUMMY_PASSWORD_HASH,
       );
-      if (!account || !isPasswordValid) throw new ApiError(401, 'Неверный email или пароль');
+      if (!account || !isPasswordValid)
+        throw new ApiError(401, 'Неверный email или пароль', 'invalid_credentials');
 
       const { passwordHash: _passwordHash, ...user } = account;
       await setSessionCookie(reply, user);

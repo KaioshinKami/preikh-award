@@ -48,7 +48,7 @@ export async function findSessionUser(request: FastifyRequest): Promise<SessionU
 
 export async function requireUser(request: FastifyRequest): Promise<void> {
   const user = await findSessionUser(request);
-  if (!user) throw new ApiError(401, 'Войдите в аккаунт, чтобы продолжить');
+  if (!user) throw new ApiError(401, 'Войдите в аккаунт, чтобы продолжить', 'unauthorized');
   request.currentUser = user;
 }
 
@@ -60,6 +60,7 @@ export async function requireAdmin(request: FastifyRequest): Promise<void> {
 }
 
 export function getCurrentUser(request: FastifyRequest): SessionUser {
-  if (!request.currentUser) throw new ApiError(401, 'Войдите в аккаунт, чтобы продолжить');
+  if (!request.currentUser)
+    throw new ApiError(401, 'Войдите в аккаунт, чтобы продолжить', 'unauthorized');
   return request.currentUser;
 }

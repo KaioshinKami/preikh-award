@@ -1,20 +1,23 @@
-import { EVENT_INFO } from '@/modules/event';
+import { EVENT_INFO, useEventTexts } from '@/modules/event';
 import { ButtonLink, Reveal, SnowflakeIcon } from '@/shared/components';
+import { useMessages } from '@/shared/i18n';
 import { handleLinkClick } from '@/shared/lib/navigation';
+import { HERO_MESSAGES } from '../../model/hero-messages';
 import { Countdown } from '../countdown/countdown';
 import { Snowdrift } from '../snowdrift/snowdrift';
 import styles from './hero.module.scss';
 
 export function Hero() {
+  const t = useMessages(HERO_MESSAGES);
+  const event = useEventTexts();
+
   return (
     <section id='top' className={styles.hero}>
       <SnowflakeIcon className={styles.backgroundFlake} size={640} strokeWidth={0.25} />
 
       <div className={styles.content}>
         <Reveal>
-          <p className={styles.badge}>
-            {EVENT_INFO.edition} · Зима {EVENT_INFO.year}
-          </p>
+          <p className={styles.badge}>{t.badge}</p>
         </Reveal>
 
         <Reveal delay={120}>
@@ -25,24 +28,21 @@ export function Hero() {
         </Reveal>
 
         <Reveal delay={240}>
-          <p className={styles.lead}>
-            Премия нашей компании за всё время. Вы выбираете героев, а мы вручаем им награды на
-            церемонии.
-          </p>
+          <p className={styles.lead}>{t.lead}</p>
         </Reveal>
 
         <Reveal delay={360} className={styles.meta}>
-          <span>{EVENT_INFO.dateLabel}</span>
+          <span>{event.dateLabel}</span>
           <span className={styles.metaDot} aria-hidden='true' />
-          <span>{EVENT_INFO.venue}</span>
+          <span>{event.venue}</span>
         </Reveal>
 
         <Reveal delay={480} className={styles.actions}>
           <ButtonLink href='/#nominations' onClick={handleLinkClick}>
-            Голосовать
+            {t.vote}
           </ButtonLink>
           <ButtonLink href='/#tickets' variant='ghost' onClick={handleLinkClick}>
-            Билет на церемонию
+            {t.ticket}
           </ButtonLink>
         </Reveal>
 

@@ -2,7 +2,18 @@ import { useState, type FormEvent } from 'react';
 import { Button, TextField } from '@/shared/components';
 import type { NominationInput } from '../../model/types';
 import { ImageField } from '../image-field/image-field';
+import {
+  readTranslations,
+  TranslationFields,
+  type TranslatedField,
+} from '../translation-fields/translation-fields';
 import styles from './nomination-form.module.scss';
+
+const TRANSLATED_FIELDS: TranslatedField<'title' | 'category' | 'description'>[] = [
+  { name: 'title', label: 'Название', maxLength: 80 },
+  { name: 'category', label: 'Категория', maxLength: 80 },
+  { name: 'description', label: 'Описание', maxLength: 400, isMultiline: true },
+];
 
 type NominationFormProps = {
   initialValues?: NominationInput;
@@ -33,6 +44,7 @@ export function NominationForm({
       category: String(formData.get('category') ?? '').trim(),
       description: String(formData.get('description') ?? '').trim(),
       imageUrl: imageUrl || null,
+      translations: readTranslations(formData, TRANSLATED_FIELDS),
     });
     if (isSaved && !initialValues) {
       form.reset();
@@ -72,6 +84,11 @@ export function NominationForm({
         defaultValue={initialValues?.imageUrl ?? null}
         shape='emblem'
         onUploadingChange={setIsImageUploading}
+      />
+      <TranslationFields
+        key={`translations-${resetCount}`}
+        fields={TRANSLATED_FIELDS}
+        initialValues={initialValues?.translations}
       />
       <div className={styles.actions}>
         <Button type='submit' size='small' disabled={isSubmitting || isImageUploading}>

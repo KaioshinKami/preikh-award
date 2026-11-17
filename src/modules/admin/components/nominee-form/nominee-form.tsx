@@ -2,7 +2,17 @@ import { useState, type FormEvent } from 'react';
 import { Button, TextField } from '@/shared/components';
 import type { NomineeInput } from '../../model/types';
 import { ImageField } from '../image-field/image-field';
+import {
+  readTranslations,
+  TranslationFields,
+  type TranslatedField,
+} from '../translation-fields/translation-fields';
 import styles from './nominee-form.module.scss';
+
+const TRANSLATED_FIELDS: TranslatedField<'name' | 'tagline'>[] = [
+  { name: 'name', label: 'Имя и фамилия', maxLength: 80 },
+  { name: 'tagline', label: 'Подпись', maxLength: 120 },
+];
 
 type NomineeFormProps = {
   initialValues?: NomineeInput;
@@ -32,6 +42,7 @@ export function NomineeForm({
       name: String(formData.get('name') ?? '').trim(),
       tagline: String(formData.get('tagline') ?? '').trim(),
       avatarUrl: avatarUrl || null,
+      translations: readTranslations(formData, TRANSLATED_FIELDS),
     });
     if (isSaved && !initialValues) {
       form.reset();
@@ -72,6 +83,11 @@ export function NomineeForm({
           </Button>
         )}
       </div>
+      <TranslationFields
+        key={`translations-${resetCount}`}
+        fields={TRANSLATED_FIELDS}
+        initialValues={initialValues?.translations}
+      />
     </form>
   );
 }

@@ -1,4 +1,5 @@
 export { ButtonLink } from './button/button-link';
+export { LanguageSwitcher } from './language-switcher/language-switcher';
 export { Logo } from './logo/logo';
 export { Reveal } from './reveal/reveal';
 export { SectionHeading } from './section-heading/section-heading';

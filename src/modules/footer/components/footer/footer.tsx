@@ -1,23 +1,44 @@
-import { EVENT_INFO } from '@/modules/event';
-import { NAV_LINKS } from '@/modules/header';
+import { EVENT_INFO, useEventTexts } from '@/modules/event';
+import { useNavLinks } from '@/modules/header';
 import { Logo } from '@/shared/components';
+import { defineMessages, useMessages } from '@/shared/i18n';
 import { handleLinkClick } from '@/shared/lib/navigation';
 import styles from './footer.module.scss';
 
+const MESSAGES = defineMessages({
+  ru: {
+    tagline: `Премия компании Preikh. ${EVENT_INFO.edition}, ${EVENT_INFO.year}.`,
+    navLabel: 'Разделы сайта',
+    toTop: 'Наверх ↑',
+  },
+  kk: {
+    tagline: `Preikh тобының сыйлығы. ${EVENT_INFO.edition}, ${EVENT_INFO.year}.`,
+    navLabel: 'Сайт бөлімдері',
+    toTop: 'Жоғары ↑',
+  },
+  en: {
+    tagline: `The Preikh crew award. ${EVENT_INFO.edition}, ${EVENT_INFO.year}.`,
+    navLabel: 'Site sections',
+    toTop: 'Back to top ↑',
+  },
+});
+
 export function Footer() {
+  const t = useMessages(MESSAGES);
+  const event = useEventTexts();
+  const navLinks = useNavLinks();
+
   return (
     <footer className={styles.footer}>
       <div className={styles.inner}>
         <div className={styles.brand}>
           <Logo />
-          <p className={styles.tagline}>
-            Премия компании Preikh. {EVENT_INFO.edition}, {EVENT_INFO.year}.
-          </p>
+          <p className={styles.tagline}>{t.tagline}</p>
         </div>
 
-        <nav aria-label='Разделы сайта'>
+        <nav aria-label={t.navLabel}>
           <ul className={styles.links}>
-            {NAV_LINKS.map((link) => (
+            {navLinks.map((link) => (
               <li key={link.href}>
                 <a className={styles.link} href={link.href} onClick={handleLinkClick}>
                   {link.label}
@@ -28,8 +49,8 @@ export function Footer() {
         </nav>
 
         <div className={styles.event}>
-          <p className={styles.eventDate}>{EVENT_INFO.dateLabel}</p>
-          <p>{EVENT_INFO.venue}</p>
+          <p className={styles.eventDate}>{event.dateLabel}</p>
+          <p>{event.venue}</p>
         </div>
       </div>
 
@@ -38,7 +59,7 @@ export function Footer() {
           © {EVENT_INFO.year} {EVENT_INFO.name}
         </p>
         <a className={styles.link} href='/#top' onClick={handleLinkClick}>
-          Наверх ↑
+          {t.toTop}
         </a>
       </div>
 
