@@ -1,5 +1,4 @@
 import { SectionHeading } from '@/shared/components';
-import { useScrollToHashOnOpen } from '@/shared/lib/navigation';
 import { useNominations } from '../../api/use-nominations';
 import { ApplicationForm } from '../application-form/application-form';
 import { NominationsGrid } from '../nominations-grid/nominations-grid';
@@ -8,8 +7,6 @@ import styles from './nominations-section.module.scss';
 
 export function NominationsSection() {
   const { data, error, reload } = useNominations();
-  // The cards and every section below them move once the list loads.
-  useScrollToHashOnOpen(data !== null);
 
   return (
     <section id='nominations' className={styles.section}>

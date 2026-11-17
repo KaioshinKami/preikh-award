@@ -37,7 +37,7 @@ export function Footer() {
         <p>
           © {EVENT_INFO.year} {EVENT_INFO.name}
         </p>
-        <a className={styles.link} href='#top'>
+        <a className={styles.link} href='/#top' onClick={handleLinkClick}>
           Наверх ↑
         </a>
       </div>

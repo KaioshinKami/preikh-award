@@ -2,12 +2,7 @@ import { AdminPage } from '@/modules/admin';
 import { AuthProvider } from '@/modules/auth';
 import { RootLayout } from '@/modules/layout';
 import { NominationPage, parseNominationPath } from '@/modules/nominations';
-import {
-  isAdminPath,
-  usePathname,
-  useScrollRestoration,
-  useScrollToHashOnOpen,
-} from '@/shared/lib/navigation';
+import { isAdminPath, usePathname, useScrollRestoration } from '@/shared/lib/navigation';
 import { LandingPage } from './landing-page';
 
 // Screens: the main page, a nomination page (/nominations/<id>) and the admin page (/admin/...).
@@ -15,7 +10,6 @@ export function App() {
   const pathname = usePathname();
   const nominationId = parseNominationPath(pathname);
   useScrollRestoration();
-  useScrollToHashOnOpen(true);
 
   if (isAdminPath(pathname)) {
     return (

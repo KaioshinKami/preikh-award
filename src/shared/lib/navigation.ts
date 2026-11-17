@@ -1,42 +1,65 @@
-import { useEffect, useLayoutEffect, useSyncExternalStore, type MouseEvent } from 'react';
+import { useLayoutEffect, useSyncExternalStore, type MouseEvent } from 'react';
 
 // shortcut: the site has three screens, so links switch them through history.pushState
 // instead of a router library. The admin page keeps its own section routing under /admin.
 const LOCATION_CHANGE_EVENT = 'app:locationchange';
 
-type HistoryState = { scrollY?: number } | null;
+// Kept in each history entry: where to scroll when the entry is shown again.
+type HistoryState = {
+  // Where the visitor left the screen; wins when they come back with Back/Forward.
+  scrollY?: number;
+  // The section a link pointed to (/#faq), used when the entry is opened the first time.
+  scrollTargetId?: string;
+};
 
 // The scroll is set by useScrollRestoration() right after the next screen renders; the
-// browser's own restoration runs before React swaps the screen and lands at the wrong spot.
+// browser's own restoration would run before React swaps the screen and land at the wrong spot.
 window.history.scrollRestoration = 'manual';
+
+// The site always opens at its top. An address that still carries a #section (an old link,
+// a reload) must not jump down the page, so the # is dropped before anything renders.
+if (window.location.hash) {
+  const { pathname, search } = window.location;
+  window.history.replaceState(window.history.state, '', `${pathname}${search}`);
+}
 
 // Bumped on every navigation; 0 means the page is still on the address it was opened with.
 let navigationCount = 0;
-let currentPathname = window.location.pathname;
-let previousPathname = currentPathname;
 
 function recordNavigation(): void {
   navigationCount += 1;
-  previousPathname = currentPathname;
-  currentPathname = window.location.pathname;
 }
 
 // Registered before React subscribes, so the count is updated when React reads it.
 window.addEventListener('popstate', recordNavigation);
 
+function readHistoryState(): HistoryState {
+  return (window.history.state as HistoryState | null) ?? {};
+}
+
 export function isAdminPath(pathname: string): boolean {
   return /^\/admin(\/|$)/.test(pathname);
 }
 
-function getHashTarget(): HTMLElement | null {
-  const { hash } = window.location;
-  return hash.length > 1 ? document.getElementById(decodeURIComponent(hash.slice(1))) : null;
-}
-
+// Section links (/#faq) scroll to the section but leave the address without the #.
 export function navigate(url: string): void {
-  const state = (window.history.state as HistoryState) ?? {};
-  window.history.replaceState({ ...state, scrollY: window.scrollY }, '');
-  window.history.pushState({}, '', url);
+  const target = new URL(url, window.location.origin);
+  const path = `${target.pathname}${target.search}`;
+  const scrollTargetId = target.hash.length > 1 ? decodeURIComponent(target.hash.slice(1)) : '';
+
+  // A section of the screen that is already open: just glide there.
+  if (path === `${window.location.pathname}${window.location.search}`) {
+    if (scrollTargetId) {
+      document.getElementById(scrollTargetId)?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    return;
+  }
+
+  window.history.replaceState({ ...readHistoryState(), scrollY: window.scrollY }, '');
+  const nextState: HistoryState = scrollTargetId ? { scrollTargetId } : {};
+  window.history.pushState(nextState, '', path);
   recordNavigation();
   window.dispatchEvent(new Event(LOCATION_CHANGE_EVENT));
 }
@@ -66,30 +89,24 @@ export function usePathname(): string {
   return useSyncExternalStore(subscribe, () => window.location.pathname);
 }
 
-// After each navigation: scroll to the #hash target, else to where this history entry was
-// left, else to the top. Runs before paint, so the old position never flashes.
+// After each screen switch: back to where the visitor left this entry, else to the section the
+// link pointed to, else to the top. Runs before paint, so the old position never flashes.
 export function useScrollRestoration(): void {
   const navigationKey = useSyncExternalStore(subscribe, () => navigationCount);
 
   useLayoutEffect(() => {
     if (navigationKey === 0 || isAdminPath(window.location.pathname)) return;
 
-    const isSamePage = window.location.pathname === previousPathname;
-    const target = getHashTarget();
-    if (target) {
-      target.scrollIntoView({ behavior: isSamePage ? 'smooth' : 'instant' });
+    const { scrollY, scrollTargetId } = readHistoryState();
+    if (scrollY !== undefined) {
+      window.scrollTo({ top: scrollY, behavior: 'instant' });
       return;
     }
-    const savedScrollY = (window.history.state as HistoryState)?.scrollY;
-    window.scrollTo({ top: savedScrollY ?? 0, behavior: 'instant' });
+    const target = scrollTargetId ? document.getElementById(scrollTargetId) : null;
+    if (target) {
+      target.scrollIntoView({ behavior: 'instant' });
+      return;
+    }
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, [navigationKey]);
-}
-
-// The page was opened at /#section: the browser jumped to the anchor before the app rendered,
-// so a screen calls this once the content the anchor points into is on the page.
-export function useScrollToHashOnOpen(isContentReady: boolean): void {
-  useEffect(() => {
-    if (!isContentReady || navigationCount > 0) return;
-    getHashTarget()?.scrollIntoView({ behavior: 'instant' });
-  }, [isContentReady]);
 }

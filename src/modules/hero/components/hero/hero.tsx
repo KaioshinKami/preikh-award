@@ -1,5 +1,6 @@
 import { EVENT_INFO } from '@/modules/event';
 import { ButtonLink, Reveal, SnowflakeIcon } from '@/shared/components';
+import { handleLinkClick } from '@/shared/lib/navigation';
 import { Countdown } from '../countdown/countdown';
 import { Snowdrift } from '../snowdrift/snowdrift';
 import styles from './hero.module.scss';
@@ -37,8 +38,10 @@ export function Hero() {
         </Reveal>
 
         <Reveal delay={480} className={styles.actions}>
-          <ButtonLink href='#nominations'>Голосовать</ButtonLink>
-          <ButtonLink href='#tickets' variant='ghost'>
+          <ButtonLink href='/#nominations' onClick={handleLinkClick}>
+            Голосовать
+          </ButtonLink>
+          <ButtonLink href='/#tickets' variant='ghost' onClick={handleLinkClick}>
             Билет на церемонию
           </ButtonLink>
         </Reveal>
