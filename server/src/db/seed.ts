@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { requireEnv } from '../config.ts';
+import { detectImageType, saveImage } from '../modules/images/images-repository.ts';
 import type {
   NominationTranslations,
   NomineeTranslations,
@@ -16,11 +17,14 @@ export type SeedNomination = {
   title: string;
   category: string;
   description: string;
+  // A picture in seed-data/emblems/ used as the nomination's logo.
+  emblem?: string;
   translations?: NominationTranslations;
   nominees: SeedNominee[];
 };
 
 const SEED_FILE = new URL('./seed-data/nominations.json', import.meta.url);
+const EMBLEMS_DIR = new URL('./seed-data/emblems/', import.meta.url);
 
 // Fills an empty database; does nothing once any nomination exists, so it is safe to re-run.
 export async function seedNominations(sql: Sql, nominations: SeedNomination[]): Promise<boolean> {
@@ -94,6 +98,35 @@ export async function seedTranslations(sql: Sql, nominations: SeedNomination[]) 
   return { nominations: nominationCount, nominees: nomineeCount };
 }
 
+// Gives every nomination that has no logo yet its emblem from the seed file, stored like an
+// upload from the admin page. A logo set in the admin page is never replaced. Safe to re-run.
+export async function seedEmblems(
+  sql: Sql,
+  nominations: SeedNomination[],
+  emblemsDir: URL = EMBLEMS_DIR,
+): Promise<number> {
+  let attached = 0;
+  for (const nomination of nominations) {
+    if (!nomination.emblem) continue;
+    const [target] = await sql<{ id: number }[]>`
+      select id from nominations where title = ${nomination.title} and image_url is null
+    `;
+    if (!target) continue;
+
+    const data = await readFile(new URL(nomination.emblem, emblemsDir));
+    const contentType = detectImageType(data);
+    if (!contentType) throw new Error(`${nomination.emblem} is not a JPEG, PNG or WebP picture`);
+
+    const url = await saveImage(sql, contentType, data);
+    const updated = await sql`
+      update nominations set image_url = ${url} where id = ${target.id} and image_url is null
+      returning id
+    `;
+    attached += updated.length;
+  }
+  return attached;
+}
+
 export async function readSeedNominations(): Promise<SeedNomination[]> {
   return JSON.parse(await readFile(SEED_FILE, 'utf8')) as SeedNomination[];
 }
@@ -103,6 +136,7 @@ if (import.meta.main) {
   const seed = await readSeedNominations();
   const isSeeded = await seedNominations(sql, seed);
   const translated = isSeeded ? null : await seedTranslations(sql, seed);
+  const emblems = await seedEmblems(sql, seed);
   await sql.end();
   console.log(
     isSeeded ? 'Seeded nominations and nominees' : 'Nominations already exist, seed skipped',
@@ -112,4 +146,5 @@ if (import.meta.main) {
       `Translations added: ${translated.nominations} nominations, ${translated.nominees} nominees`,
     );
   }
+  console.log(`Emblems added: ${emblems}`);
 }
