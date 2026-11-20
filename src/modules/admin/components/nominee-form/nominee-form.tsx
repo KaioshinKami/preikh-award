@@ -69,6 +69,7 @@ export function NomineeForm({
         key={resetCount}
         label='Фото'
         name='avatarUrl'
+        hint='Одно фото на человека: появится во всех номинациях с этим именем'
         defaultValue={initialValues?.avatarUrl ?? null}
         shape='portrait'
         onUploadingChange={setIsImageUploading}

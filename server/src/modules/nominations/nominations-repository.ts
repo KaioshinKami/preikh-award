@@ -21,6 +21,10 @@ export type NominationRow = {
 };
 
 // All nominations with their nominees and vote counts, in creation order.
+// A photo belongs to the person, not to one nomination: nominees with the same name (any case,
+// spaces around ignored) share it. The admin routes write a saved photo to all of them; here a
+// nominee without a photo of its own shows the one set for its name elsewhere (photos uploaded
+// before sharing existed, or a nominee added without a photo).
 export function listNominations(sql: Sql): Promise<NominationRow[]> {
   return sql<NominationRow[]>`
     select
@@ -36,7 +40,12 @@ export function listNominations(sql: Sql): Promise<NominationRow[]> {
             'id', e.id,
             'name', e.name,
             'tagline', e.tagline,
-            'avatarUrl', e.avatar_url,
+            'avatarUrl', coalesce(e.avatar_url, (
+              select s.avatar_url from nominees s
+              where s.avatar_url is not null and lower(btrim(s.name)) = lower(btrim(e.name))
+              order by s.id desc
+              limit 1
+            )),
             'translations', e.translations,
             'votes', (select count(*) from votes v where v.nominee_id = e.id)
           )

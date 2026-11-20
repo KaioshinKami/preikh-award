@@ -11,6 +11,7 @@ type ImageFieldProps = {
   name: string;
   defaultValue: string | null;
   shape: 'emblem' | 'portrait';
+  hint?: string;
   onUploadingChange?: (isUploading: boolean) => void;
 };
 
@@ -20,6 +21,7 @@ export function ImageField({
   name,
   defaultValue,
   shape,
+  hint,
   onUploadingChange,
 }: ImageFieldProps) {
   const labelId = useId();
@@ -79,6 +81,7 @@ export function ImageField({
           )}
         </div>
       </div>
+      {hint && <p className={styles.hint}>{hint}</p>}
       {error && (
         <p className={styles.error} role='alert'>
           {error}

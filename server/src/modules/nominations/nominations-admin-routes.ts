@@ -91,6 +91,14 @@ async function deleteUnlessVoted(run: () => Promise<readonly unknown[]>, notFoun
 }
 
 export async function nominationsAdminRoutes(app: FastifyInstance) {
+  // One photo per person: nominees with the same name in other nominations get it too.
+  const sharePhoto = async (nomineeId: number, name: string, avatarUrl: string | null) => {
+    await app.sql`
+      update nominees set avatar_url = ${avatarUrl}
+      where lower(btrim(name)) = lower(btrim(${name})) and id <> ${nomineeId}
+    `;
+  };
+
   app.get('/nominations', async () => ({ nominations: await listNominations(app.sql) }));
 
   app.post<{ Body: NominationBody }>(
@@ -150,6 +158,8 @@ export async function nominationsAdminRoutes(app: FastifyInstance) {
         values (${request.params.id}, ${requireText(name, 'Укажите имя')}, ${tagline.trim()}, ${avatarUrl}, ${app.sql.json(cleanTranslations(translations))})
         returning id, name, tagline, avatar_url, translations
       `;
+        // A new photo becomes this person's photo everywhere; without one, the list shows theirs.
+        if (avatarUrl) await sharePhoto(nominee.id, nominee.name, avatarUrl);
         return reply.code(201).send({ nominee });
       } catch (error) {
         if (hasErrorCode(error, FOREIGN_KEY_VIOLATION))
@@ -172,6 +182,9 @@ export async function nominationsAdminRoutes(app: FastifyInstance) {
       returning id, name, tagline, avatar_url, translations
     `;
       assertFound(rows, 'Номинант не найден');
+      // The form shows the person's shared photo, so what it sends (a new one, the same one, or
+      // none after "Убрать") is the person's photo in every nomination.
+      await sharePhoto(request.params.id, rows[0].name, avatarUrl);
       return { nominee: rows[0] };
     },
   );
