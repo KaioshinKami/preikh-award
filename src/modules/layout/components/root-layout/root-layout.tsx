@@ -12,8 +12,9 @@ export function RootLayout({ children }: RootLayoutProps) {
   return (
     <>
       <div className={styles.sky} aria-hidden='true' />
-      <Snowfall />
       <div className={styles.page}>
+        {/* Inside the page so the snow falls over the cards and photos but under the header. */}
+        <Snowfall />
         <Header />
         <main>{children}</main>
         <Footer />
