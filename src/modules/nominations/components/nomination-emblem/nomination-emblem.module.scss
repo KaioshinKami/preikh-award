@@ -21,6 +21,28 @@
   }
 }
 
+// Turns in the middle while the logo loads; hidden and stopped once it has.
+.loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40%;
+  max-width: 96px;
+  translate: -50% -50%;
+  transition:
+    opacity 0.3s ease,
+    visibility 0s linear 0.3s;
+
+  .emblem:has(.image[data-loaded='true']) & {
+    visibility: hidden;
+    opacity: 0;
+
+    svg * {
+      animation-play-state: paused;
+    }
+  }
+}
+
 .image {
   position: relative;
   width: 100%;

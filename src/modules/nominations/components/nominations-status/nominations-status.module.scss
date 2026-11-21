@@ -1,5 +1,15 @@
 @use '@/shared/sass/mixins' as *;
 
+.loading {
+  display: grid;
+  place-items: center;
+  min-height: 240px;
+}
+
+.loader {
+  width: 96px;
+}
+
 .status {
   @include frost-card;
   display: flex;
@@ -15,14 +25,6 @@
   color: var(--color-ice);
 }
 
-.spinning {
-  animation: spin 2.4s linear infinite;
-
-  @include reduced-motion {
-    animation: none;
-  }
-}
-
 .retry {
   min-height: 44px;
   padding: 10px 22px;
@@ -35,11 +37,5 @@
 
   &:hover {
     background: rgb(125 211 252 / 14%);
-  }
-}
-
-@keyframes spin {
-  to {
-    rotate: 360deg;
   }
 }

@@ -1,4 +1,4 @@
-import { SnowflakeIcon } from '@/shared/components';
+import { IceLoader, SnowflakeIcon } from '@/shared/components';
 import { useMessages } from '@/shared/i18n';
 import { NOMINATIONS_MESSAGES } from '../../model/nominations-messages';
 import styles from './nominations-status.module.scss';
@@ -8,19 +8,27 @@ type NominationsStatusProps = {
   onRetry?: () => void;
 };
 
+// Loading shows only the ice loader (the message is kept for screen readers); an error keeps
+// its text and a retry button, since the visitor has to know what went wrong.
 export function NominationsStatus({ message, onRetry }: NominationsStatusProps) {
   const t = useMessages(NOMINATIONS_MESSAGES);
-  const iconClassName = onRetry ? styles.icon : `${styles.icon} ${styles.spinning}`;
+
+  if (!onRetry) {
+    return (
+      <div className={styles.loading} role='status'>
+        <IceLoader className={styles.loader} />
+        <span className='visually-hidden'>{message}</span>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.status} role='status'>
-      <SnowflakeIcon className={iconClassName} size={32} />
+      <SnowflakeIcon className={styles.icon} size={32} />
       <p>{message}</p>
-      {onRetry && (
-        <button type='button' className={styles.retry} onClick={onRetry}>
-          {t.retry}
-        </button>
-      )}
+      <button type='button' className={styles.retry} onClick={onRetry}>
+        {t.retry}
+      </button>
     </div>
   );
 }
