@@ -32,9 +32,13 @@ export function Hero() {
         </Reveal>
 
         <Reveal delay={360} className={styles.meta}>
-          <span>{event.dateLabel}</span>
+          <span>
+            <span className={styles.metaLabel}>{t.dateLabel}:</span> {event.dateLabel}
+          </span>
           <span className={styles.metaDot} aria-hidden='true' />
-          <span>{event.venue}</span>
+          <span>
+            <span className={styles.metaLabel}>{t.venueLabel}:</span> {event.venue}
+          </span>
         </Reveal>
 
         <Reveal delay={480} className={styles.actions}>

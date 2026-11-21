@@ -6,6 +6,9 @@ type HeroTexts = {
   lead: string;
   vote: string;
   ticket: string;
+  // Labels before the ceremony's date and place under the title.
+  dateLabel: string;
+  venueLabel: string;
   // The ceremony date goes into one of the running-line phrases.
   tickerPhrases: (ceremonyDate: string) => string[];
   countdown: {
@@ -24,6 +27,8 @@ export const HERO_MESSAGES = defineMessages<HeroTexts>({
     lead: 'Премия нашей компании за всё время. Вы выбираете героев, а мы вручаем им награды на церемонии.',
     vote: 'Голосовать',
     ticket: 'Билет на церемонию',
+    dateLabel: 'Дата',
+    venueLabel: 'Место проведения',
     tickerPhrases: (date) => [
       'Голоса решают всё',
       'Кто станет Preikh King?',
@@ -44,6 +49,8 @@ export const HERO_MESSAGES = defineMessages<HeroTexts>({
     lead: 'Біздің топтың барлық уақыттағы сыйлығы. Кейіпкерлерді сіз таңдайсыз, ал біз оларды салтанатта марапаттаймыз.',
     vote: 'Дауыс беру',
     ticket: 'Салтанатқа билет',
+    dateLabel: 'Күні',
+    venueLabel: 'Өтетін орны',
     tickerPhrases: (date) => [
       'Бәрін дауыс шешеді',
       'Preikh King кім болады?',
@@ -64,6 +71,8 @@ export const HERO_MESSAGES = defineMessages<HeroTexts>({
     lead: "Our crew's all-time award. You pick the heroes, and we hand them their awards at the ceremony.",
     vote: 'Vote',
     ticket: 'Ceremony ticket',
+    dateLabel: 'Date',
+    venueLabel: 'Venue',
     tickerPhrases: (date) => [
       'Votes decide everything',
       'Who will be Preikh King?',
