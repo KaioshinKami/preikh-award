@@ -42,6 +42,13 @@ type NominationsTexts = {
     submit: string;
     tooShort: (minLength: number) => string;
     sent: string;
+    merged: string;
+    listTitle: string;
+    empty: string;
+    support: string;
+    supported: string;
+    unsupportHint: string;
+    mine: string;
   };
 };
 
@@ -95,7 +102,7 @@ export const NOMINATIONS_MESSAGES = defineMessages<NominationsTexts>({
     },
     ownVariant: {
       title: 'Свой вариант',
-      lead: 'Есть кандидат, которого нет в списке? Напишите его — комиссия увидит ваш вариант.',
+      lead: 'Есть кандидат, которого нет в списке? Напишите его или поддержите вариант других — комиссия увидит, какие варианты популярны.',
       guest: 'Войдите, чтобы написать свой вариант.',
       signIn: 'Войти',
       label: 'Ваш вариант',
@@ -103,6 +110,13 @@ export const NOMINATIONS_MESSAGES = defineMessages<NominationsTexts>({
       submit: 'Отправить',
       tooShort: (min) => `Напишите хотя бы ${min} символа`,
       sent: 'Спасибо! Ваш вариант отправлен комиссии.',
+      merged: 'Такой вариант уже предлагали — мы засчитали ваш голос за него.',
+      listTitle: 'Что предлагают другие',
+      empty: 'Пока никто ничего не предложил — ваш вариант может стать первым.',
+      support: 'Поддержать',
+      supported: 'Поддержано',
+      unsupportHint: 'Нажмите ещё раз, чтобы убрать голос',
+      mine: 'Ваш вариант',
     },
   },
   kk: {
@@ -150,7 +164,7 @@ export const NOMINATIONS_MESSAGES = defineMessages<NominationsTexts>({
     },
     ownVariant: {
       title: 'Өз нұсқаңыз',
-      lead: 'Тізімде жоқ үміткер бар ма? Жазыңыз — комиссия сіздің нұсқаңызды көреді.',
+      lead: 'Тізімде жоқ үміткер бар ма? Жазыңыз немесе басқалардың нұсқасын қолдаңыз — комиссия қай нұсқалар танымал екенін көреді.',
       guest: 'Өз нұсқаңызды жазу үшін кіріңіз.',
       signIn: 'Кіру',
       label: 'Сіздің нұсқаңыз',
@@ -158,6 +172,13 @@ export const NOMINATIONS_MESSAGES = defineMessages<NominationsTexts>({
       submit: 'Жіберу',
       tooShort: (min) => `Кемінде ${min} таңба жазыңыз`,
       sent: 'Рахмет! Нұсқаңыз комиссияға жіберілді.',
+      merged: 'Мұндай нұсқа бұрын ұсынылған — оған дауысыңызды қостық.',
+      listTitle: 'Басқалар не ұсынады',
+      empty: 'Әзірге ешкім ештеңе ұсынған жоқ — сіздің нұсқаңыз бірінші болуы мүмкін.',
+      support: 'Қолдау',
+      supported: 'Қолдадыңыз',
+      unsupportHint: 'Дауысты алып тастау үшін қайта басыңыз',
+      mine: 'Сіздің нұсқаңыз',
     },
   },
   en: {
@@ -204,7 +225,7 @@ export const NOMINATIONS_MESSAGES = defineMessages<NominationsTexts>({
     },
     ownVariant: {
       title: 'Your own pick',
-      lead: 'Someone missing from the list? Write them in — the commission will see your pick.',
+      lead: "Someone missing from the list? Write them in or support someone else's pick — the commission will see which picks are popular.",
       guest: 'Sign in to write your own pick.',
       signIn: 'Sign in',
       label: 'Your pick',
@@ -212,6 +233,13 @@ export const NOMINATIONS_MESSAGES = defineMessages<NominationsTexts>({
       submit: 'Send',
       tooShort: (min) => `Write at least ${min} characters`,
       sent: 'Thanks! Your pick has been sent to the commission.',
+      merged: 'Someone already suggested that — we counted your support for it.',
+      listTitle: 'What others suggest',
+      empty: 'Nobody has suggested anything yet — yours could be the first.',
+      support: 'Support',
+      supported: 'Supported',
+      unsupportHint: 'Click again to take your support back',
+      mine: 'Your pick',
     },
   },
 });

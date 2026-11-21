@@ -1,3 +1,4 @@
+import { formatVotes } from '@/modules/nominations';
 import { Button } from '@/shared/components';
 import { approveApplication, rejectApplication } from '../../api/admin-api';
 import { useAdminAction } from '../../model/use-admin-action';
@@ -19,7 +20,10 @@ export function ApplicationCard({ application, onReviewed }: ApplicationCardProp
     <article className={styles.card}>
       <div className={styles.body}>
         <p className={styles.nomination}>«{application.nominationTitle}»</p>
-        <h3 className={styles.nominee}>{application.nomineeName}</h3>
+        <h3 className={styles.nominee}>
+          {application.nomineeName}
+          <span className={styles.supports}>{formatVotes(application.supports)}</span>
+        </h3>
         {application.comment && <p className={styles.comment}>{application.comment}</p>}
         <p className={styles.meta}>
           {application.authorName} · {application.authorEmail} ·{' '}

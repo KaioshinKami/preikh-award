@@ -53,6 +53,8 @@ export type Application = {
   nominationTitle: string;
   authorName: string;
   authorEmail: string;
+  // People behind the suggestion, its author included.
+  supports: number;
 };
 
 export type UserRole = 'user' | 'admin';

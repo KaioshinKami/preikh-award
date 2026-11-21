@@ -18,6 +18,11 @@
   }
 }
 
+// The list of picks and any error below it run across the whole card.
+.wrapper > :nth-child(n + 3) {
+  grid-column: 1 / -1;
+}
+
 .intro {
   display: flex;
   flex-direction: column;

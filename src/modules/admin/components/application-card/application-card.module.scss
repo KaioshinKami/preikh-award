@@ -30,6 +30,19 @@
   overflow-wrap: anywhere;
 }
 
+// How many people want this nominee, the author included.
+.supports {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgb(125 211 252 / 14%);
+  color: var(--color-ice);
+  font-size: 13px;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
 .comment {
   color: var(--color-text);
   font-size: 15px;

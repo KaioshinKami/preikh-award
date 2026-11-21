@@ -1,0 +1,77 @@
+@use '@/shared/sass/mixins' as *;
+
+.variants {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.empty {
+  color: var(--color-text-muted);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'name button'
+    'count button';
+  align-items: center;
+  gap: 2px 12px;
+  padding: 10px 12px 10px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgb(5 9 20 / 35%);
+  transition: border-color 0.2s ease;
+
+  &[data-supported='true'] {
+    border-color: rgb(125 211 252 / 45%);
+  }
+
+  @include from($breakpoint-sm) {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas: 'name count button';
+    gap: 16px;
+  }
+}
+
+.name {
+  grid-area: name;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.count {
+  grid-area: count;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.button,
+.mine {
+  grid-area: button;
+}
+
+.mine {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgb(125 211 252 / 12%);
+  color: var(--color-ice);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}

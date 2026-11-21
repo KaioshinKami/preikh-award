@@ -5,6 +5,8 @@ import { Button, TextField } from '@/shared/components';
 import { useMessages } from '@/shared/i18n';
 import { submitApplication } from '../../api/nominations-api';
 import { NOMINATIONS_MESSAGES } from '../../model/nominations-messages';
+import { useVariants } from '../../model/use-variants';
+import { VariantsList } from '../variants-list/variants-list';
 import styles from './own-variant-form.module.scss';
 
 type OwnVariantFormProps = {
@@ -18,12 +20,20 @@ const MIN_LENGTH = 2;
 const MAX_LENGTH = 80;
 
 // At the bottom of a nomination page: anyone signed in can write in their own pick for this
-// nomination, voted or not. It arrives in the admin page as a suggestion for the commission.
+// nomination, voted or not, and support the picks of others. Picks arrive in the admin page as
+// suggestions for the commission, with the number of people behind each one.
 export function OwnVariantForm({ nominationId }: OwnVariantFormProps) {
   const t = useMessages(NOMINATIONS_MESSAGES).ownVariant;
   const { user, openAuthDialog } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<FormMessage | null>(null);
+  const {
+    variants,
+    error: variantsError,
+    pendingId,
+    reload,
+    toggleSupport,
+  } = useVariants(nominationId);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -37,9 +47,14 @@ export function OwnVariantForm({ nominationId }: OwnVariantFormProps) {
     setIsSubmitting(true);
     setMessage(null);
     try {
-      await submitApplication({ nominationId, nomineeName: variant, comment: '' });
+      const { status } = await submitApplication({
+        nominationId,
+        nomineeName: variant,
+        comment: '',
+      });
       form.reset();
-      setMessage({ tone: 'success', text: t.sent });
+      setMessage({ tone: 'success', text: status === 'supported' ? t.merged : t.sent });
+      reload();
     } catch (error) {
       setMessage({ tone: 'error', text: getErrorMessage(error) });
     } finally {
@@ -84,6 +99,19 @@ export function OwnVariantForm({ nominationId }: OwnVariantFormProps) {
             {t.signIn}
           </Button>
         </div>
+      )}
+
+      {variants && (
+        <VariantsList
+          variants={variants}
+          pendingId={pendingId}
+          onToggleSupport={(chosen) => void toggleSupport(chosen)}
+        />
+      )}
+      {variantsError && (
+        <p className={styles.message} data-tone='error' role='alert'>
+          {variantsError}
+        </p>
       )}
     </section>
   );

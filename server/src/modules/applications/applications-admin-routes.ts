@@ -29,12 +29,14 @@ export async function applicationsAdminRoutes(app: FastifyInstance) {
         select
           a.id, a.nominee_name, a.comment, a.status, a.created_at,
           a.nomination_id, n.title as nomination_title,
-          u.name as author_name, u.email as author_email
+          u.name as author_name, u.email as author_email,
+          (select count(*)::int from application_supports s where s.application_id = a.id)
+            as supports
         from applications a
         join nominations n on n.id = a.nomination_id
         join users u on u.id = a.user_id
         where a.status = ${status}
-        order by a.created_at desc
+        order by supports desc, a.created_at desc
       `;
       return { applications };
     },

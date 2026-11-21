@@ -13,6 +13,9 @@ export type ErrorCode =
   | 'already_voted'
   | 'nominee_name_required'
   | 'nomination_not_found'
+  | 'already_nominee'
+  | 'variant_not_found'
+  | 'own_variant'
   | 'validation_failed'
   | 'too_many_requests'
   | 'internal_error';

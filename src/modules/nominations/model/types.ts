@@ -34,3 +34,12 @@ export type NominationsData = {
 export type VotesByNomination = Record<number, number>;
 
 export type VoteStatus = 'available' | 'pending' | 'voted' | 'locked' | 'closed';
+
+// Someone's own pick for a nomination, waiting for the commission, with the people behind it.
+export type Variant = {
+  id: number;
+  name: string;
+  supports: number;
+  isMine: boolean;
+  isSupported: boolean;
+};
