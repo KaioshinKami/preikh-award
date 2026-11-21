@@ -21,7 +21,7 @@ export const ABOUT_MESSAGES = defineMessages<AboutTexts>({
       'Номинантов собрала комиссия, а победителей выбираете вы: в каждой номинации побеждает тот, за кого отдали больше всего голосов. Итоги держим в секрете до церемонии.',
     ],
     stats: [
-      { value: '2023–2026', label: 'все истории за всё время' },
+      { value: '2023–2027', label: 'все истории за всё время' },
       { value: '4', label: 'человека в комиссии' },
       { value: '1 голос', label: 'в каждой номинации' },
       { value: '1 ночь', label: 'чтобы вручить все награды' },
@@ -35,7 +35,7 @@ export const ABOUT_MESSAGES = defineMessages<AboutTexts>({
       'Номинанттарды комиссия жинады, ал жеңімпаздарды сіз таңдайсыз: әр номинацияда ең көп дауыс жинаған адам жеңеді. Қорытындыны салтанатқа дейін құпия сақтаймыз.',
     ],
     stats: [
-      { value: '2023–2026', label: 'барлық уақыттағы оқиғалар' },
+      { value: '2023–2027', label: 'барлық уақыттағы оқиғалар' },
       { value: '4', label: 'адам комиссияда' },
       { value: '1 дауыс', label: 'әр номинацияда' },
       { value: '1 түн', label: 'барлық марапатты табыстауға' },
@@ -49,7 +49,7 @@ export const ABOUT_MESSAGES = defineMessages<AboutTexts>({
       'The commission picked the nominees, and you pick the winners: in each nomination, whoever gets the most votes wins. The results stay secret until the ceremony.',
     ],
     stats: [
-      { value: '2023–2026', label: 'every story, all time' },
+      { value: '2023–2027', label: 'every story, all time' },
       { value: '4', label: 'people on the commission' },
       { value: '1 vote', label: 'in each nomination' },
       { value: '1 night', label: 'to hand out every award' },
