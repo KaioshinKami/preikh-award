@@ -8,23 +8,26 @@ export type EventTexts = {
   calendarTitle: string;
 };
 
+// The ceremony's date, time and place are kept secret for now.
+const SECRET = '?';
+
 const EVENT_MESSAGES = defineMessages<EventTexts>({
   ru: {
-    dateLabel: '12 декабря 2026',
-    timeLabel: '19:00',
-    venue: 'Дом Абди',
+    dateLabel: SECRET,
+    timeLabel: SECRET,
+    venue: SECRET,
     calendarTitle: `${EVENT_INFO.name} ${EVENT_INFO.year} — церемония`,
   },
   kk: {
-    dateLabel: '2026 жылғы 12 желтоқсан',
-    timeLabel: '19:00',
-    venue: 'Абдидің үйі',
+    dateLabel: SECRET,
+    timeLabel: SECRET,
+    venue: SECRET,
     calendarTitle: `${EVENT_INFO.name} ${EVENT_INFO.year} — салтанат`,
   },
   en: {
-    dateLabel: 'December 12, 2026',
-    timeLabel: '19:00',
-    venue: "Abdi's place",
+    dateLabel: SECRET,
+    timeLabel: SECRET,
+    venue: SECRET,
     calendarTitle: `${EVENT_INFO.name} ${EVENT_INFO.year} — ceremony`,
   },
 });

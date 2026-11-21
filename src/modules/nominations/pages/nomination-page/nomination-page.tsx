@@ -1,10 +1,12 @@
 import { useEffect } from 'react';
 import { useLocale, useMessages } from '@/shared/i18n';
 import { handleLinkClick } from '@/shared/lib/navigation';
+import { SITE_TITLE } from '@/shared/lib/site-title';
 import { useNominations } from '../../api/use-nominations';
 import { NominationEmblem } from '../../components/nomination-emblem/nomination-emblem';
 import { NominationsStatus } from '../../components/nominations-status/nominations-status';
 import { NomineeCard } from '../../components/nominee-card/nominee-card';
+import { OwnVariantForm } from '../../components/own-variant-form/own-variant-form';
 import { getVoteResults, getVoteStatus } from '../../lib/get-vote-results';
 import { localize, NOMINATION_FIELDS } from '../../lib/localize';
 import { getNominationAnchorId, getNominationPath } from '../../lib/nomination-path';
@@ -59,7 +61,7 @@ export function NominationPage({ nominationId }: NominationPageProps) {
   const index = nominations.findIndex((nomination) => nomination.id === nominationId);
   const nomination = nominations[index];
   const texts = nomination ? localize(nomination, NOMINATION_FIELDS, locale) : null;
-  useDocumentTitle(texts ? `${texts.title} — PREIKH AWARD` : null);
+  useDocumentTitle(texts ? `${texts.title} — ${SITE_TITLE}` : null);
 
   const previousNomination = nominations[index - 1];
   const nextNomination = index === -1 ? undefined : nominations[index + 1];
@@ -127,6 +129,8 @@ export function NominationPage({ nominationId }: NominationPageProps) {
                 ))}
               </ul>
             )}
+
+            <OwnVariantForm key={nomination.id} nominationId={nomination.id} />
 
             <nav className={styles.pager} aria-label={t.page.otherNominations}>
               {previousNomination && (

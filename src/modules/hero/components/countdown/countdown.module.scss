@@ -57,3 +57,31 @@
     font-size: 13px;
   }
 }
+
+// While the date is a secret, the "?" marks glow one after another.
+.units[data-secret='true'] .value {
+  color: var(--color-frost);
+  text-shadow: 0 0 18px rgb(125 211 252 / 55%);
+  animation: mystery 2.8s ease-in-out infinite;
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+@for $index from 2 through 4 {
+  .units[data-secret='true'] .unit:nth-child(#{$index}) .value {
+    animation-delay: #{($index - 1) * 0.35}s;
+  }
+}
+
+@keyframes mystery {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}

@@ -508,56 +508,38 @@
     ]
   },
   {
-    "title": "NPC года",
+    "title": "Мем года",
     "category": "Главные номинации",
-    "description": "Самый мемный и предсказуемый персонаж компании. За фирменные фразы, привычки и поведение.",
-    "emblem": "09-npc-goda.webp",
+    "description": "Самый узнаваемый мем или внутренний прикол, который определил 2026 год.",
+    "emblem": "20-mem-goda.webp",
     "translations": {
       "kk": {
-        "title": "Жылдың NPC-і",
+        "title": "Жыл мемі",
         "category": "Басты номинациялар",
-        "description": "Топтағы ең мемге айналған әрі болжамды кейіпкер. Өзіне тән сөздері, әдеттері мен мінез-құлқы үшін."
+        "description": "2026 жылды айқындаған ең танымал мем немесе іштегі әзіл."
       },
       "en": {
-        "title": "NPC of the year",
+        "title": "Meme of the year",
         "category": "Main nominations",
-        "description": "The crew's most meme-worthy and predictable character. For the signature phrases, habits and behaviour."
+        "description": "The most recognisable meme or inside joke that defined 2026."
       }
     },
     "nominees": [
       {
-        "name": "Жалгас",
+        "name": "Ербо",
         "tagline": "",
         "translations": {
           "en": {
-            "name": "Zhalgas"
+            "name": "Yerbo"
           }
         }
       },
       {
-        "name": "Мусор",
+        "name": "Гани",
         "tagline": "",
         "translations": {
           "en": {
-            "name": "Musor"
-          }
-        }
-      },
-      {
-        "name": "Елдос",
-        "tagline": "",
-        "translations": {
-          "en": {
-            "name": "Yeldos"
-          }
-        }
-      },
-      {
-        "name": "Нуржан",
-        "tagline": "",
-        "translations": {
-          "en": {
-            "name": "Nurzhan"
+            "name": "Gani"
           }
         }
       },
@@ -567,6 +549,15 @@
         "translations": {
           "en": {
             "name": "Zhanat"
+          }
+        }
+      },
+      {
+        "name": "Алишер",
+        "tagline": "",
+        "translations": {
+          "en": {
+            "name": "Alisher"
           }
         }
       }
@@ -1319,38 +1310,56 @@
     ]
   },
   {
-    "title": "Мем года",
+    "title": "NPC года",
     "category": "Главные номинации",
-    "description": "Самый узнаваемый мем или внутренний прикол, который определил 2026 год.",
-    "emblem": "20-mem-goda.webp",
+    "description": "Самый мемный и предсказуемый персонаж компании. За фирменные фразы, привычки и поведение.",
+    "emblem": "09-npc-goda.webp",
     "translations": {
       "kk": {
-        "title": "Жыл мемі",
+        "title": "Жылдың NPC-і",
         "category": "Басты номинациялар",
-        "description": "2026 жылды айқындаған ең танымал мем немесе іштегі әзіл."
+        "description": "Топтағы ең мемге айналған әрі болжамды кейіпкер. Өзіне тән сөздері, әдеттері мен мінез-құлқы үшін."
       },
       "en": {
-        "title": "Meme of the year",
+        "title": "NPC of the year",
         "category": "Main nominations",
-        "description": "The most recognisable meme or inside joke that defined 2026."
+        "description": "The crew's most meme-worthy and predictable character. For the signature phrases, habits and behaviour."
       }
     },
     "nominees": [
       {
-        "name": "Ербо",
+        "name": "Жалгас",
         "tagline": "",
         "translations": {
           "en": {
-            "name": "Yerbo"
+            "name": "Zhalgas"
           }
         }
       },
       {
-        "name": "Гани",
+        "name": "Мусор",
         "tagline": "",
         "translations": {
           "en": {
-            "name": "Gani"
+            "name": "Musor"
+          }
+        }
+      },
+      {
+        "name": "Елдос",
+        "tagline": "",
+        "translations": {
+          "en": {
+            "name": "Yeldos"
+          }
+        }
+      },
+      {
+        "name": "Нуржан",
+        "tagline": "",
+        "translations": {
+          "en": {
+            "name": "Nurzhan"
           }
         }
       },
@@ -1360,15 +1369,6 @@
         "translations": {
           "en": {
             "name": "Zhanat"
-          }
-        }
-      },
-      {
-        "name": "Алишер",
-        "tagline": "",
-        "translations": {
-          "en": {
-            "name": "Alisher"
           }
         }
       }

@@ -31,6 +31,18 @@ type NominationsTexts = {
     nameTooShort: (minLength: number) => string;
     sent: string;
   };
+  // The "your own pick" field at the bottom of a nomination page.
+  ownVariant: {
+    title: string;
+    lead: string;
+    guest: string;
+    signIn: string;
+    label: string;
+    placeholder: string;
+    submit: string;
+    tooShort: (minLength: number) => string;
+    sent: string;
+  };
 };
 
 export const NOMINATIONS_MESSAGES = defineMessages<NominationsTexts>({
@@ -81,6 +93,17 @@ export const NOMINATIONS_MESSAGES = defineMessages<NominationsTexts>({
       nameTooShort: (min) => `Укажите имя номинанта — минимум ${min} символа`,
       sent: 'Заявка отправлена — модератор скоро её проверит.',
     },
+    ownVariant: {
+      title: 'Свой вариант',
+      lead: 'Есть кандидат, которого нет в списке? Напишите его — комиссия увидит ваш вариант.',
+      guest: 'Войдите, чтобы написать свой вариант.',
+      signIn: 'Войти',
+      label: 'Ваш вариант',
+      placeholder: 'Кого бы вы выдвинули?',
+      submit: 'Отправить',
+      tooShort: (min) => `Напишите хотя бы ${min} символа`,
+      sent: 'Спасибо! Ваш вариант отправлен комиссии.',
+    },
   },
   kk: {
     section: {
@@ -125,6 +148,17 @@ export const NOMINATIONS_MESSAGES = defineMessages<NominationsTexts>({
       nameTooShort: (min) => `Номинанттың атын жазыңыз — кемінде ${min} таңба`,
       sent: 'Өтінім жіберілді — модератор жақында тексереді.',
     },
+    ownVariant: {
+      title: 'Өз нұсқаңыз',
+      lead: 'Тізімде жоқ үміткер бар ма? Жазыңыз — комиссия сіздің нұсқаңызды көреді.',
+      guest: 'Өз нұсқаңызды жазу үшін кіріңіз.',
+      signIn: 'Кіру',
+      label: 'Сіздің нұсқаңыз',
+      placeholder: 'Кімді ұсынар едіңіз?',
+      submit: 'Жіберу',
+      tooShort: (min) => `Кемінде ${min} таңба жазыңыз`,
+      sent: 'Рахмет! Нұсқаңыз комиссияға жіберілді.',
+    },
   },
   en: {
     section: {
@@ -167,6 +201,17 @@ export const NOMINATIONS_MESSAGES = defineMessages<NominationsTexts>({
       submit: 'Send suggestion',
       nameTooShort: (min) => `Enter the nominee's name — at least ${min} characters`,
       sent: 'Suggestion sent — a moderator will review it soon.',
+    },
+    ownVariant: {
+      title: 'Your own pick',
+      lead: 'Someone missing from the list? Write them in — the commission will see your pick.',
+      guest: 'Sign in to write your own pick.',
+      signIn: 'Sign in',
+      label: 'Your pick',
+      placeholder: 'Who would you nominate?',
+      submit: 'Send',
+      tooShort: (min) => `Write at least ${min} characters`,
+      sent: 'Thanks! Your pick has been sent to the commission.',
     },
   },
 });

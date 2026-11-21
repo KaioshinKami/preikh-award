@@ -13,6 +13,8 @@ type HeroTexts = {
     over: string;
     units: { days: string; hours: string; minutes: string; seconds: string };
     timerLabel: (days: number) => string;
+    // Read out instead of the numbers while the date is a secret.
+    secretLabel: string;
   };
 };
 
@@ -34,6 +36,7 @@ export const HERO_MESSAGES = defineMessages<HeroTexts>({
       over: 'Церемония состоялась — спасибо, что были с нами!',
       units: { days: 'дней', hours: 'часов', minutes: 'минут', seconds: 'секунд' },
       timerLabel: (days) => `До церемонии осталось дней: ${days}`,
+      secretLabel: 'Дата церемонии пока секрет',
     },
   },
   kk: {
@@ -53,6 +56,7 @@ export const HERO_MESSAGES = defineMessages<HeroTexts>({
       over: 'Салтанат өтті — бізбен бірге болғаныңызға рахмет!',
       units: { days: 'күн', hours: 'сағат', minutes: 'минут', seconds: 'секунд' },
       timerLabel: (days) => `Салтанатқа ${days} күн қалды`,
+      secretLabel: 'Салтанат күні әзірге құпия',
     },
   },
   en: {
@@ -72,6 +76,7 @@ export const HERO_MESSAGES = defineMessages<HeroTexts>({
       over: 'The ceremony is over — thanks for being with us!',
       units: { days: 'days', hours: 'hours', minutes: 'minutes', seconds: 'seconds' },
       timerLabel: (days) => `${days} days until the ceremony`,
+      secretLabel: 'The ceremony date is a secret for now',
     },
   },
 });

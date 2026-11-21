@@ -31,7 +31,7 @@ export const TICKETS_MESSAGES = defineMessages<TicketsTexts>({
       {
         id: 'guest',
         name: 'Гость церемонии',
-        priceKzt: 1000,
+        priceKzt: 5000,
         perks: ['Вход на церемонию', 'Вручение всех наград вживую', 'Вся компания в одном месте'],
       },
     ],
@@ -47,7 +47,7 @@ export const TICKETS_MESSAGES = defineMessages<TicketsTexts>({
       {
         id: 'guest',
         name: 'Салтанат қонағы',
-        priceKzt: 1000,
+        priceKzt: 5000,
         perks: ['Салтанатқа кіру', 'Барлық марапатты тікелей табыстау', 'Бүкіл топ бір жерде'],
       },
     ],
@@ -63,7 +63,7 @@ export const TICKETS_MESSAGES = defineMessages<TicketsTexts>({
       {
         id: 'guest',
         name: 'Ceremony guest',
-        priceKzt: 1000,
+        priceKzt: 5000,
         perks: [
           'Entry to the ceremony',
           'Every award handed out live',

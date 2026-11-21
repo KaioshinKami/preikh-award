@@ -14,8 +14,8 @@ export type VotingStage = {
 export type StageStatus = 'done' | 'active' | 'upcoming';
 
 export const VOTING_STAGES: VotingStage[] = [
-  { id: 'nominees', startIso: '2026-11-01T00:00:00+05:00', endIso: '2026-11-13T23:59:59+05:00' },
-  { id: 'voting', startIso: '2026-11-14T00:00:00+05:00', endIso: '2026-12-10T23:59:59+05:00' },
+  { id: 'nominees', startIso: '2026-11-01T00:00:00+05:00', endIso: '2026-11-21T23:59:59+05:00' },
+  { id: 'voting', startIso: '2026-11-22T00:00:00+05:00', endIso: '2026-12-10T23:59:59+05:00' },
   { id: 'counting', startIso: '2026-12-11T00:00:00+05:00', endIso: '2026-12-11T23:59:59+05:00' },
   { id: 'ceremony', startIso: EVENT_INFO.ceremonyStartIso, endIso: EVENT_INFO.ceremonyEndIso },
 ];
@@ -41,13 +41,13 @@ export const VOTING_STAGES_MESSAGES = defineMessages<VotingStagesTexts>({
       nominees: {
         title: 'Номинанты',
         description: 'Компания предложила кандидатов, комиссия собрала из них номинации.',
-        dateLabel: 'до 13 ноября',
+        dateLabel: 'до 21 ноября',
       },
       voting: {
         title: 'Голосование',
         description:
           'Один голос в каждой номинации. Своего кандидата можно предложить через заявку.',
-        dateLabel: '14 ноября – 10 декабря',
+        dateLabel: '22 ноября – 10 декабря',
       },
       counting: {
         title: 'Подсчёт голосов',
@@ -56,7 +56,7 @@ export const VOTING_STAGES_MESSAGES = defineMessages<VotingStagesTexts>({
       },
       ceremony: {
         title: 'Церемония',
-        description: `Объявляем победителей и вручаем награды. ${event.venue}, ${event.timeLabel}.`,
+        description: `Объявляем победителей и вручаем награды. Место — ${event.venue}, время — ${event.timeLabel}.`,
         dateLabel: event.dateLabel,
       },
     }),
@@ -70,12 +70,12 @@ export const VOTING_STAGES_MESSAGES = defineMessages<VotingStagesTexts>({
       nominees: {
         title: 'Номинанттар',
         description: 'Топ үміткерлерді ұсынды, комиссия солардан номинациялар құрады.',
-        dateLabel: '13 қарашаға дейін',
+        dateLabel: '21 қарашаға дейін',
       },
       voting: {
         title: 'Дауыс беру',
         description: 'Әр номинацияда бір дауыс. Өз үміткеріңізді өтінім арқылы ұсына аласыз.',
-        dateLabel: '14 қараша – 10 желтоқсан',
+        dateLabel: '22 қараша – 10 желтоқсан',
       },
       counting: {
         title: 'Дауыс санау',
@@ -84,7 +84,7 @@ export const VOTING_STAGES_MESSAGES = defineMessages<VotingStagesTexts>({
       },
       ceremony: {
         title: 'Салтанат',
-        description: `Жеңімпаздарды жариялап, марапаттарды табыстаймыз. ${event.venue}, ${event.timeLabel}.`,
+        description: `Жеңімпаздарды жариялап, марапаттарды табыстаймыз. Орны — ${event.venue}, уақыты — ${event.timeLabel}.`,
         dateLabel: event.dateLabel,
       },
     }),
@@ -99,12 +99,12 @@ export const VOTING_STAGES_MESSAGES = defineMessages<VotingStagesTexts>({
         title: 'Nominees',
         description:
           'The crew suggested candidates, and the commission turned them into nominations.',
-        dateLabel: 'until November 13',
+        dateLabel: 'until November 21',
       },
       voting: {
         title: 'Voting',
         description: 'One vote per nomination. You can suggest your own candidate with the form.',
-        dateLabel: 'November 14 – December 10',
+        dateLabel: 'November 22 – December 10',
       },
       counting: {
         title: 'Vote count',
@@ -113,7 +113,7 @@ export const VOTING_STAGES_MESSAGES = defineMessages<VotingStagesTexts>({
       },
       ceremony: {
         title: 'Ceremony',
-        description: `We announce the winners and hand out the awards. ${event.venue}, ${event.timeLabel}.`,
+        description: `We announce the winners and hand out the awards. Place: ${event.venue}, time: ${event.timeLabel}.`,
         dateLabel: event.dateLabel,
       },
     }),

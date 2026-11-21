@@ -9,9 +9,9 @@ export type Flake = {
   opacity: number;
 };
 
-const AREA_PER_FLAKE = 6500;
-const MIN_FLAKES = 45;
-const MAX_FLAKES = 260;
+const AREA_PER_FLAKE = 4500;
+const MIN_FLAKES = 65;
+const MAX_FLAKES = 360;
 const WIND_SPEED = 10;
 const SPRITE_SIZE = 64;
 

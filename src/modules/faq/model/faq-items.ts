@@ -40,7 +40,7 @@ export const FAQ_MESSAGES = defineMessages<FaqTexts>({
       },
       {
         question: 'Где и когда церемония?',
-        answer: `${event.dateLabel}, ${event.timeLabel} — ${event.venue}. Там объявим победителей и вручим награды.`,
+        answer: `Дата — ${event.dateLabel}, время — ${event.timeLabel}, место — ${event.venue}. Пока это секрет: объявим ближе к церемонии.`,
       },
     ],
   },
@@ -69,7 +69,7 @@ export const FAQ_MESSAGES = defineMessages<FaqTexts>({
       },
       {
         question: 'Салтанат қашан және қайда өтеді?',
-        answer: `${event.dateLabel}, ${event.timeLabel} — ${event.venue}. Сол жерде жеңімпаздарды жариялап, марапаттарды табыстаймыз.`,
+        answer: `Күні — ${event.dateLabel}, уақыты — ${event.timeLabel}, орны — ${event.venue}. Әзірге бұл құпия: салтанатқа жақын жариялаймыз.`,
       },
     ],
   },
@@ -99,7 +99,7 @@ export const FAQ_MESSAGES = defineMessages<FaqTexts>({
       },
       {
         question: 'When and where is the ceremony?',
-        answer: `${event.dateLabel}, ${event.timeLabel} — ${event.venue}. That's where we announce the winners and hand out the awards.`,
+        answer: `Date: ${event.dateLabel}, time: ${event.timeLabel}, place: ${event.venue}. It's a secret for now — we'll announce it closer to the ceremony.`,
       },
     ],
   },

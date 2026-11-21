@@ -3,7 +3,7 @@ import { ButtonLink, Reveal, SnowflakeIcon } from '@/shared/components';
 import { useMessages } from '@/shared/i18n';
 import { handleLinkClick } from '@/shared/lib/navigation';
 import { HERO_MESSAGES } from '../../model/hero-messages';
-import { Countdown } from '../countdown/countdown';
+import { Countdown, SecretCountdown } from '../countdown/countdown';
 import { Snowdrift } from '../snowdrift/snowdrift';
 import styles from './hero.module.scss';
 
@@ -47,7 +47,11 @@ export function Hero() {
         </Reveal>
 
         <Reveal delay={600} className={styles.countdown}>
-          <Countdown targetIso={EVENT_INFO.ceremonyStartIso} />
+          {EVENT_INFO.isCeremonySecret ? (
+            <SecretCountdown />
+          ) : (
+            <Countdown targetIso={EVENT_INFO.ceremonyStartIso} />
+          )}
         </Reveal>
       </div>
 

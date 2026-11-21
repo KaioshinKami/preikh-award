@@ -56,7 +56,7 @@ export function listNominations(sql: Sql): Promise<NominationRow[]> {
     from nominations n
     left join nominees e on e.nomination_id = n.id
     group by n.id
-    order by n.id
+    order by n.position, n.id
   `;
 }
 

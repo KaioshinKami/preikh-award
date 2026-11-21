@@ -1,4 +1,4 @@
-import { getCeremonyCalendarUrl, useEventTexts } from '@/modules/event';
+import { EVENT_INFO, getCeremonyCalendarUrl, useEventTexts } from '@/modules/event';
 import { ButtonLink, Reveal, SectionHeading } from '@/shared/components';
 import { useMessages } from '@/shared/i18n';
 import { TICKETS_MESSAGES } from '../../model/ticket-tiers';
@@ -11,6 +11,8 @@ export function Tickets() {
   const t = useMessages(TICKETS_MESSAGES);
   const event = useEventTexts();
   const eventDetails = `${event.dateLabel}, ${event.timeLabel} · ${event.venue}`;
+  // A calendar entry would give the secret date away.
+  const canAddToCalendar = !EVENT_INFO.isCeremonySecret;
 
   return (
     <section id='tickets' className={styles.section}>
@@ -27,12 +29,14 @@ export function Tickets() {
           ))}
         </ul>
 
-        <Reveal className={styles.salesNote}>
-          <p>{t.calendarNote}</p>
-          <ButtonLink href={getCeremonyCalendarUrl(event)} variant='ghost' isExternal>
-            {t.calendarButton}
-          </ButtonLink>
-        </Reveal>
+        {canAddToCalendar && (
+          <Reveal className={styles.salesNote}>
+            <p>{t.calendarNote}</p>
+            <ButtonLink href={getCeremonyCalendarUrl(event)} variant='ghost' isExternal>
+              {t.calendarButton}
+            </ButtonLink>
+          </Reveal>
+        )}
       </div>
     </section>
   );
