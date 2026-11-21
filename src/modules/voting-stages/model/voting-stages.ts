@@ -15,8 +15,8 @@ export type StageStatus = 'done' | 'active' | 'upcoming';
 
 export const VOTING_STAGES: VotingStage[] = [
   { id: 'nominees', startIso: '2026-11-01T00:00:00+05:00', endIso: '2026-11-21T23:59:59+05:00' },
-  { id: 'voting', startIso: '2026-11-22T00:00:00+05:00', endIso: '2026-12-10T23:59:59+05:00' },
-  { id: 'counting', startIso: '2026-12-11T00:00:00+05:00', endIso: '2026-12-11T23:59:59+05:00' },
+  { id: 'voting', startIso: '2026-11-22T00:00:00+05:00', endIso: '2026-11-30T23:59:59+05:00' },
+  { id: 'counting', startIso: '2026-12-01T00:00:00+05:00', endIso: '2026-12-01T23:59:59+05:00' },
   { id: 'ceremony', startIso: EVENT_INFO.ceremonyStartIso, endIso: EVENT_INFO.ceremonyEndIso },
 ];
 
@@ -47,12 +47,12 @@ export const VOTING_STAGES_MESSAGES = defineMessages<VotingStagesTexts>({
         title: 'Голосование',
         description:
           'Один голос в каждой номинации. Своего кандидата можно предложить через заявку.',
-        dateLabel: '22 ноября – 10 декабря',
+        dateLabel: '22 – 30 ноября',
       },
       counting: {
         title: 'Подсчёт голосов',
         description: 'Голосование закрыто. Итоги знает только комиссия, и она молчит.',
-        dateLabel: '11 декабря',
+        dateLabel: '1 декабря',
       },
       ceremony: {
         title: 'Церемония',
@@ -75,12 +75,12 @@ export const VOTING_STAGES_MESSAGES = defineMessages<VotingStagesTexts>({
       voting: {
         title: 'Дауыс беру',
         description: 'Әр номинацияда бір дауыс. Өз үміткеріңізді өтінім арқылы ұсына аласыз.',
-        dateLabel: '22 қараша – 10 желтоқсан',
+        dateLabel: '22 – 30 қараша',
       },
       counting: {
         title: 'Дауыс санау',
         description: 'Дауыс беру жабылды. Қорытындыны тек комиссия біледі, ал ол үндемейді.',
-        dateLabel: '11 желтоқсан',
+        dateLabel: '1 желтоқсан',
       },
       ceremony: {
         title: 'Салтанат',
@@ -104,12 +104,12 @@ export const VOTING_STAGES_MESSAGES = defineMessages<VotingStagesTexts>({
       voting: {
         title: 'Voting',
         description: 'One vote per nomination. You can suggest your own candidate with the form.',
-        dateLabel: 'November 22 – December 10',
+        dateLabel: 'November 22 – 30',
       },
       counting: {
         title: 'Vote count',
         description: 'Voting is closed. Only the commission knows the results, and it keeps quiet.',
-        dateLabel: 'December 11',
+        dateLabel: 'December 1',
       },
       ceremony: {
         title: 'Ceremony',
