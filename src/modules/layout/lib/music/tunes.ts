@@ -83,15 +83,37 @@ const JINGLE_BELLS: Tune = {
   sleighBells: true,
 };
 
-// Shchedryk, known as Carol of the Bells (Mykola Leontovych, 1916). 3/4, G minor: the
-// four-note bell figure over a falling bass, joined by a second voice the second time round.
-const BELL_FIGURE = 'Bb5:1 A5:0.5 Bb5:0.5 G5:1';
-const CAROL_BASS = 'G2+D3+G3:3 F2+Bb2+D3:3 Eb2+G2+Bb2:3 D2+A2+D3:3';
+// Deck the Halls (Welsh traditional). 4/4, C major: "Deck the halls with boughs of holly,
+// fa-la-la-la-la, la-la-la-la" twice, then "Don we now our gay apparel" and the last line.
+const DECK_LINE = 'G5:1.5 F5:0.5 E5:1 D5:1  C5:1 D5:1 E5:1 C5:1';
+const DECK_FA_LA = 'D5:0.5 E5:0.5 F5:0.5 D5:0.5 E5:1.5 D5:0.5  C5:1 B4:1 C5:2';
+const DECK_CHORDS = [C_MAJOR, C_MAJOR, 'G3+B3+F4:2 C3+E3+G3:2', 'G3+B3+D4:2 C3+E3+G3:2'].join(' ');
 
-const CAROL_OF_THE_BELLS: Tune = {
-  bpm: 150,
-  lines: [repeat(BELL_FIGURE, 16), ['R:24', repeat('D6:1 C6:0.5 D6:0.5 Bb5:1', 8)].join(' ')],
-  chords: repeat(CAROL_BASS, 4),
+const DECK_THE_HALLS: Tune = {
+  bpm: 132,
+  lines: [
+    [
+      DECK_LINE,
+      DECK_FA_LA,
+      DECK_LINE,
+      DECK_FA_LA,
+      'D5:1.5 E5:0.5 F5:1 D5:1  E5:1.5 F5:0.5 G5:1 D5:1',
+      'E5:0.5 F#5:0.5 G5:1 A5:0.5 B5:0.5 C6:1  B5:1 A5:1 G5:2',
+      DECK_LINE,
+      'A5:0.5 A5:0.5 A5:0.5 A5:0.5 G5:1.5 F5:0.5  E5:1 D5:1 C5:2',
+    ].join(' '),
+  ],
+  chords: [
+    DECK_CHORDS,
+    DECK_CHORDS,
+    'G3+B3+F4:4 C3+E3+G3:2 G3+B3+D4:2',
+    'D3+F#3+A3:2 G3+B3+D4:2 D3+F#3+C4:2 G3+B3+D4:2',
+    'G3+B3+F4:2 C3+E3+G3:2',
+    C_MAJOR,
+    'F3+A3+C4:2 G3+B3+F4:2',
+    'C3+E3+G3:1 G3+B3+F4:1 C3+E3+G3:2',
+  ].join(' '),
+  sleighBells: true,
 };
 
 // We Wish You a Merry Christmas (English traditional). 3/4, F major, twice through.
@@ -112,4 +134,4 @@ const WE_WISH_YOU: Tune = {
   chords: ['R:1', WISH_CHORDS, 'F3+A3+C4:3', WISH_CHORDS, 'F3+A3+C4:3'].join(' '),
 };
 
-export const PLAYLIST: Tune[] = [JINGLE_BELLS, CAROL_OF_THE_BELLS, WE_WISH_YOU];
+export const PLAYLIST: Tune[] = [JINGLE_BELLS, DECK_THE_HALLS, WE_WISH_YOU];
