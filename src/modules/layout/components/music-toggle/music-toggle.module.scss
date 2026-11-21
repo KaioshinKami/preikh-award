@@ -104,18 +104,19 @@
   }
 }
 
-// On a first visit only: shows up for a few seconds next to the button, then fades away.
+// While the browser still keeps the page silent: shows up for a few seconds, then fades away.
 .hint {
   padding: 8px 14px;
   border: 1px solid rgb(125 211 252 / 30%);
-  border-radius: 999px;
+  max-width: min(320px, calc(100vw - 100px));
+  border-radius: 16px;
   background: rgb(11 27 51 / 85%);
   color: var(--color-frost);
   font-size: 14px;
-  white-space: nowrap;
+  line-height: 1.35;
   pointer-events: none;
   backdrop-filter: blur(10px);
-  animation: hint 8s ease 2.5s both;
+  animation: hint 9s ease 1.2s both;
 
   @include reduced-motion {
     animation-name: hint-still;

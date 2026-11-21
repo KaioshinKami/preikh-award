@@ -6,6 +6,7 @@ const FADE_SECONDS = 0.4;
 const SCHEDULE_AHEAD_SECONDS = 1.5;
 const CHECK_EVERY_MS = 400;
 const PAUSE_BETWEEN_TUNES_SECONDS = 1.2;
+const START_LEAD_SECONDS = 0.15;
 
 // A music-box tine: a few sine partials, the higher ones dying away faster.
 const TINE_PARTIALS = [
@@ -63,12 +64,23 @@ export class MusicBox {
   private nextTuneTime = 0;
   private checkTimer: number | undefined;
   private suspendTimer: number | undefined;
+  private readonly runningListeners = new Set<(isRunning: boolean) => void>();
 
   static isSupported(): boolean {
     return typeof window !== 'undefined' && typeof window.AudioContext === 'function';
   }
 
-  // Must be called from a click or key press the first time: browsers keep sound off until then.
+  // Tells when sound actually starts and stops. Until the visitor clicks or presses a key on the
+  // page, a browser usually keeps the sound off however often play() is called.
+  onRunningChange(listener: (isRunning: boolean) => void): () => void {
+    this.runningListeners.add(listener);
+    return () => this.runningListeners.delete(listener);
+  }
+
+  isRunning(): boolean {
+    return this.graph?.context.state === 'running';
+  }
+
   play(): void {
     const { context, output } = this.graph ?? this.setUp();
     window.clearTimeout(this.suspendTimer);
@@ -109,6 +121,10 @@ export class MusicBox {
 
   private setUp(): Graph {
     const context = new AudioContext();
+    context.addEventListener('statechange', () => {
+      const isRunning = context.state === 'running';
+      for (const listener of this.runningListeners) listener(isRunning);
+    });
     const voices = context.createGain();
     const dry = context.createGain();
     const wet = context.createGain();
@@ -136,7 +152,10 @@ export class MusicBox {
     if (!this.graph) return;
     const now = this.graph.context.currentTime;
     while (this.nextTuneTime < now + SCHEDULE_AHEAD_SECONDS) {
-      if (this.nextTuneTime < now) this.nextTuneTime = now + 0.15;
+      // A fresh audio clock stands at 0: leave room so no note lands before "now".
+      if (this.nextTuneTime < now + START_LEAD_SECONDS) {
+        this.nextTuneTime = now + START_LEAD_SECONDS;
+      }
       const end = this.scheduleTune(this.tunes[this.tuneIndex], this.nextTuneTime);
       this.nextTuneTime = end + PAUSE_BETWEEN_TUNES_SECONDS;
       this.tuneIndex = (this.tuneIndex + 1) % this.tunes.length;

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { defineMessages, useMessages } from '@/shared/i18n';
 import { MusicBox } from '../../lib/music/music-box';
 import styles from './music-toggle.module.scss';
@@ -7,38 +7,47 @@ const MESSAGES = defineMessages({
   ru: {
     turnOn: 'Включить новогоднюю музыку',
     turnOff: 'Выключить музыку',
-    hint: 'Включить новогоднюю музыку?',
+    hint: 'Нажмите в любом месте — заиграет музыка',
   },
   kk: {
     turnOn: 'Жаңа жылдық музыканы қосу',
     turnOff: 'Музыканы өшіру',
-    hint: 'Жаңа жылдық музыканы қосасыз ба?',
+    hint: 'Кез келген жерді басыңыз — музыка ойнайды',
   },
   en: {
     turnOn: 'Play New Year music',
     turnOff: 'Turn the music off',
-    hint: 'Play some New Year music?',
+    hint: 'Tap anywhere and the music starts',
   },
 });
 
-// The visitor's last choice, so the music stays on (or off) on their next visit.
+// Only an explicit "off" is remembered: everyone else gets the music.
 const STORAGE_KEY = 'preikh-music';
-type MusicChoice = 'on' | 'off';
+// Events that count as the visitor doing something, after which browsers allow sound.
+const GESTURE_EVENTS = ['click', 'touchend', 'keydown'] as const;
 
-function readChoice(): MusicChoice | null {
+function isTurnedOff(): boolean {
   try {
-    const choice = window.localStorage.getItem(STORAGE_KEY);
-    return choice === 'on' || choice === 'off' ? choice : null;
+    return window.localStorage.getItem(STORAGE_KEY) === 'off';
   } catch {
-    return null;
+    return false;
   }
 }
 
-function saveChoice(choice: MusicChoice): void {
+function saveChoice(choice: 'on' | 'off'): void {
   try {
     window.localStorage.setItem(STORAGE_KEY, choice);
   } catch {
     // Private mode or blocked storage: the choice just isn't remembered.
+  }
+}
+
+// Music is a nice extra: if the browser's audio fails, the page carries on without it.
+function safely(action: () => void): void {
+  try {
+    action();
+  } catch (error) {
+    console.warn('Music could not play', error);
   }
 }
 
@@ -63,76 +72,83 @@ function PlayingIcon() {
   );
 }
 
-// A round button in the corner of every public page. Off until the visitor turns it on; the
-// music then plays across pages and goes quiet while the tab is in the background.
+// The music plays from the moment the site opens. Browsers keep a page silent until the visitor
+// clicks, taps or presses a key, so when the first try is blocked the music starts with that
+// first gesture, wherever it lands. The corner button turns it off (and that is remembered) or
+// back on. It plays across pages and goes quiet while the tab is in the background.
 export function MusicToggle() {
   const t = useMessages(MESSAGES);
   const boxRef = useRef<MusicBox | null>(null);
-  const cancelAutoStartRef = useRef<(() => void) | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [showHint, setShowHint] = useState(() => readChoice() === null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [wantsMusic, setWantsMusic] = useState(() => MusicBox.isSupported() && !isTurnedOff());
+  const [isAudible, setIsAudible] = useState(false);
 
-  const getBox = () => (boxRef.current ??= new MusicBox());
+  const getBox = () => {
+    if (!boxRef.current) {
+      const box = new MusicBox();
+      box.onRunningChange(setIsAudible);
+      boxRef.current = box;
+    }
+    return boxRef.current;
+  };
 
-  const start = useCallback(() => {
-    (boxRef.current ??= new MusicBox()).play();
-    setIsPlaying(true);
-    setShowHint(false);
+  // The first try, right on opening the site.
+  useEffect(() => {
+    if (wantsMusic) safely(() => getBox().play());
+    // Only on the first render: later changes go through the button.
   }, []);
 
-  // Someone who left the music on hears it again from their first click or key press here:
-  // browsers only allow sound once the visitor has done something on the page.
+  // Still silent though the visitor wants music: start it on their first gesture. A press on the
+  // music button itself is left to the button.
   useEffect(() => {
-    if (readChoice() !== 'on') return;
-    const startOnce = () => {
-      cancel();
-      start();
+    if (!wantsMusic || isAudible) return;
+    const startOnGesture = (event: Event) => {
+      if (buttonRef.current?.contains(event.target as Node)) return;
+      safely(() => getBox().play());
     };
-    const cancel = () => {
-      window.removeEventListener('click', startOnce, true);
-      window.removeEventListener('keydown', startOnce, true);
-      cancelAutoStartRef.current = null;
+    for (const type of GESTURE_EVENTS) window.addEventListener(type, startOnGesture, true);
+    return () => {
+      for (const type of GESTURE_EVENTS) window.removeEventListener(type, startOnGesture, true);
     };
-    window.addEventListener('click', startOnce, true);
-    window.addEventListener('keydown', startOnce, true);
-    cancelAutoStartRef.current = cancel;
-    return cancel;
-  }, [start]);
+  }, [wantsMusic, isAudible]);
 
   useEffect(() => {
-    if (!isPlaying) return;
-    const followTab = () => (document.hidden ? boxRef.current?.pause() : boxRef.current?.play());
+    if (!wantsMusic) return;
+    const followTab = () =>
+      safely(() => (document.hidden ? boxRef.current?.pause() : boxRef.current?.play()));
     document.addEventListener('visibilitychange', followTab);
     return () => document.removeEventListener('visibilitychange', followTab);
-  }, [isPlaying]);
+  }, [wantsMusic]);
 
   useEffect(() => () => boxRef.current?.close(), []);
 
   if (!MusicBox.isSupported()) return null;
 
+  const isPlaying = wantsMusic && isAudible;
+
   const handleClick = () => {
-    cancelAutoStartRef.current?.();
     if (isPlaying) {
-      getBox().pause();
-      setIsPlaying(false);
+      safely(() => getBox().pause());
+      setWantsMusic(false);
       saveChoice('off');
     } else {
-      start();
+      safely(() => getBox().play());
+      setWantsMusic(true);
       saveChoice('on');
     }
-    setShowHint(false);
   };
 
   const label = isPlaying ? t.turnOff : t.turnOn;
 
   return (
     <div className={styles.music}>
-      {showHint && (
+      {wantsMusic && !isAudible && (
         <p className={styles.hint} aria-hidden='true'>
           {t.hint}
         </p>
       )}
       <button
+        ref={buttonRef}
         type='button'
         className={styles.button}
         data-playing={isPlaying}
