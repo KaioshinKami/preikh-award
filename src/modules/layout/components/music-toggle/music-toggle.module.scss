@@ -1,0 +1,152 @@
+@use '@/shared/sass/mixins' as *;
+
+// Above the snow (z-index 50), below the header and its menu (100).
+.music {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.button {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 1px solid rgb(125 211 252 / 35%);
+  border-radius: 50%;
+  background: rgb(11 27 51 / 72%);
+  color: var(--color-frost);
+  box-shadow: 0 10px 30px -12px rgb(56 189 248 / 60%);
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    border-color: rgb(125 211 252 / 70%);
+    transform: scale(1.06);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-ice);
+    outline-offset: 3px;
+  }
+
+  &[data-playing='true'] {
+    border-color: rgb(125 211 252 / 75%);
+    box-shadow:
+      0 0 0 4px rgb(125 211 252 / 12%),
+      0 10px 34px -10px rgb(56 189 248 / 85%);
+  }
+
+  svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentcolor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+// Four bars bouncing like a little equalizer while the music plays.
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 20px;
+
+  span {
+    width: 3px;
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(to top, var(--color-ice), var(--color-frost));
+    transform-origin: bottom;
+    animation: bounce 0.9s ease-in-out infinite alternate;
+
+    &:nth-child(2) {
+      animation-delay: -0.45s;
+    }
+
+    &:nth-child(3) {
+      animation-delay: -0.2s;
+    }
+
+    &:nth-child(4) {
+      animation-delay: -0.65s;
+    }
+
+    @include reduced-motion {
+      animation: none;
+      transform: scaleY(0.6);
+    }
+  }
+}
+
+@keyframes bounce {
+  from {
+    transform: scaleY(0.25);
+  }
+
+  to {
+    transform: scaleY(1);
+  }
+}
+
+// On a first visit only: shows up for a few seconds next to the button, then fades away.
+.hint {
+  padding: 8px 14px;
+  border: 1px solid rgb(125 211 252 / 30%);
+  border-radius: 999px;
+  background: rgb(11 27 51 / 85%);
+  color: var(--color-frost);
+  font-size: 14px;
+  white-space: nowrap;
+  pointer-events: none;
+  backdrop-filter: blur(10px);
+  animation: hint 8s ease 2.5s both;
+
+  @include reduced-motion {
+    animation-name: hint-still;
+  }
+}
+
+@keyframes hint {
+  0% {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+
+  8%,
+  88% {
+    opacity: 1;
+    transform: none;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes hint-still {
+  0%,
+  100% {
+    opacity: 0;
+  }
+
+  8%,
+  88% {
+    opacity: 1;
+  }
+}

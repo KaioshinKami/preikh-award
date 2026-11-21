@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Footer } from '@/modules/footer';
 import { Header } from '@/modules/header';
+import { MusicToggle } from '../music-toggle/music-toggle';
 import { Snowfall } from '../snowfall/snowfall';
 import styles from './root-layout.module.scss';
 
@@ -19,6 +20,8 @@ export function RootLayout({ children }: RootLayoutProps) {
         <main>{children}</main>
         <Footer />
       </div>
+      {/* Outside the page wrapper so the music keeps playing from one page to the next. */}
+      <MusicToggle />
     </>
   );
 }
