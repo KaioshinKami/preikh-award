@@ -1,6 +1,6 @@
 // Old tunes free of copyright, written as notes for the music box. A note is "pitch:beats":
-// "E5:1" is a quarter-note E above middle C, "Bb5:0.5" an eighth, "R:2" a half rest.
-// A chord joins pitches with "+": "C3+E3+G3:4".
+// "E5:1" is a quarter-note E above middle C, "Bb5:0.5" an eighth, "B4:1/3" a triplet eighth,
+// "R:2" a half rest. A chord joins pitches with "+": "C3+E3+G3:4".
 
 export type Tune = {
   bpm: number;
@@ -35,8 +35,9 @@ export function parseNotes(text: string): ParsedNote[] {
     .trim()
     .split(/\s+/)
     .map((token) => {
-      const [pitchPart, beatsPart] = token.split(':');
-      const beats = Number(beatsPart);
+      const [pitchPart, beatsPart = ''] = token.split(':');
+      const [numerator, denominator = '1'] = beatsPart.split('/');
+      const beats = Number(numerator) / Number(denominator);
       if (!pitchPart || !(beats > 0)) throw new Error(`Not a note: ${token}`);
       return {
         pitches: pitchPart === 'R' ? [] : pitchPart.split('+').map(toMidi),
@@ -134,4 +135,91 @@ const WE_WISH_YOU: Tune = {
   chords: ['R:1', WISH_CHORDS, 'F3+A3+C4:3', WISH_CHORDS, 'F3+A3+C4:3'].join(' '),
 };
 
-export const PLAYLIST: Tune[] = [JINGLE_BELLS, DECK_THE_HALLS, WE_WISH_YOU];
+// O Tannenbaum, known as O Christmas Tree (German traditional, words by Ernst Anschütz, 1824).
+// 3/4, G major, as in the Wikipedia score: the first part, the middle part, the first part again.
+const TREE_A = [
+  'G5:0.75 G5:0.25 G5:1 A5:1  B5:0.75 B5:0.25 B5:1.5 B5:0.5',
+  'A5:0.5 B5:0.5 C6:1 F#5:1',
+].join(' ');
+const TREE_A_CHORDS = 'G3+B3+D4:2 D3+F#3+A3:1 G3+B3+D4:3 A3+C4+E4:2 D3+F#3+C4:2 G3+B3+D4:1.5';
+
+const O_CHRISTMAS_TREE: Tune = {
+  bpm: 96,
+  lines: [
+    [
+      'D5:0.5',
+      TREE_A,
+      'A5:1 G5:1 D6:0.5',
+      'D6:0.5 B5:0.5 E6:1.5 D6:0.5  D6:0.5 C6:0.5 C6:1.5 C6:0.5',
+      'C6:0.5 A5:0.5 D6:1.5 C6:0.5  C6:0.5 B5:0.5 B5:1 D5:0.5',
+      TREE_A,
+      'A5:1 G5:1 R:0.5',
+    ].join(' '),
+  ],
+  chords: [
+    'R:0.5',
+    TREE_A_CHORDS,
+    'G3+B3+F4:1 C3+E3+G3:2 D3+F#3+C4:6 G3+B3+D4:2.5',
+    TREE_A_CHORDS,
+  ].join(' '),
+};
+
+// Waltz of the Flowers from The Nutcracker (Pyotr Tchaikovsky, 1892): the main theme, in
+// C major, with an "oom-pah-pah" waltz accompaniment on the music box.
+const WALTZ_A = 'E5:2 B4:1  D5:2 A4:1  C5:2 F4:1  B4:1/3 C5:1/3 B4:1/3 A#4:1 B4:1';
+const WALTZ_B = 'F5:2 C5:1  E5:2 B4:1  D5:2 G4:1  C5:1/3 D5:1/3 C5:1/3 B4:1 C5:1';
+const WALTZ_BRIDGE = 'F5:2 C5:1  F5:2 C#5:1  F5:2 D5:1  G5:0.5 G4:0.5 A4:0.5 B4:0.5 C5:0.5 D5:0.5';
+
+// One bar of "oom-pah-pah": the bass note, then the rest of the chord twice.
+const oomPahPah = (bass: string, upper: string) => `${bass}:1 ${upper}:1 ${upper}:1`;
+const WALTZ_C = oomPahPah('C4', 'E4+G4');
+const WALTZ_DM = oomPahPah('D4', 'F4+A4');
+const WALTZ_G7 = oomPahPah('G3', 'B3+F4');
+const WALTZ_A_BEAT = [WALTZ_C, WALTZ_C, WALTZ_DM, WALTZ_G7].join(' ');
+const WALTZ_B_BEAT = [WALTZ_DM, WALTZ_G7, WALTZ_C, WALTZ_C].join(' ');
+const WALTZ_BRIDGE_BEAT = [
+  oomPahPah('G#3', 'C4+F4'),
+  oomPahPah('A3', 'C#4+F4'),
+  oomPahPah('A#3', 'D4+F4'),
+  WALTZ_G7,
+].join(' ');
+
+const CHORD_C = 'C3+E3+G3:3';
+const CHORD_DM = 'D3+F3+A3:3';
+const CHORD_G7 = 'G2+B2+F3:3';
+const WALTZ_A_CHORDS = [CHORD_C, CHORD_C, CHORD_DM, CHORD_G7].join(' ');
+const WALTZ_B_CHORDS = [CHORD_DM, CHORD_G7, CHORD_C, CHORD_C].join(' ');
+
+const WALTZ_OF_THE_FLOWERS: Tune = {
+  bpm: 160,
+  lines: [
+    [WALTZ_A, WALTZ_B, WALTZ_A, WALTZ_BRIDGE, WALTZ_A, WALTZ_B, 'R:3'].join(' '),
+    [
+      WALTZ_A_BEAT,
+      WALTZ_B_BEAT,
+      WALTZ_A_BEAT,
+      WALTZ_BRIDGE_BEAT,
+      WALTZ_A_BEAT,
+      WALTZ_B_BEAT,
+      'C4+E4+G4:3',
+    ].join(' '),
+  ],
+  chords: [
+    WALTZ_A_CHORDS,
+    WALTZ_B_CHORDS,
+    WALTZ_A_CHORDS,
+    'G#2+C3+F3:3 A2+C#3+F3:3 A#2+D3+F3:3',
+    CHORD_G7,
+    WALTZ_A_CHORDS,
+    WALTZ_B_CHORDS,
+    CHORD_C,
+  ].join(' '),
+};
+
+export const PLAYLIST: Tune[] = [
+  JINGLE_BELLS,
+  DECK_THE_HALLS,
+  O_CHRISTMAS_TREE,
+  WALTZ_OF_THE_FLOWERS,
+  WE_WISH_YOU,
+];

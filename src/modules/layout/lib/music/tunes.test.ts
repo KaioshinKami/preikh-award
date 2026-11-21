@@ -10,10 +10,11 @@ test('pitch names turn into MIDI note numbers', () => {
 });
 
 test('notes, chords and rests are read with their lengths', () => {
-  assert.deepEqual(parseNotes('E5:1 R:0.5 C3+E3+G3:4'), [
+  assert.deepEqual(parseNotes('E5:1 R:0.5 C3+E3+G3:4 B4:1/3'), [
     { pitches: [76], beats: 1 },
     { pitches: [], beats: 0.5 },
     { pitches: [48, 52, 55], beats: 4 },
+    { pitches: [71], beats: 1 / 3 },
   ]);
   assert.throws(() => parseNotes('H5:1'));
   assert.throws(() => parseNotes('C5'));
@@ -23,7 +24,8 @@ test('in every tune the melody lines and the chords last equally long', () => {
   for (const tune of PLAYLIST) {
     const chordBeats = countBeats(parseNotes(tune.chords));
     for (const line of tune.lines) {
-      assert.equal(countBeats(parseNotes(line)), chordBeats);
+      // Triplets add up to whole beats only up to rounding.
+      assert.ok(Math.abs(countBeats(parseNotes(line)) - chordBeats) < 1e-9);
     }
   }
 });
