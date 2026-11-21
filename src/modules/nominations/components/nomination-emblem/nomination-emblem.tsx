@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { SnowflakeIcon } from '@/shared/components';
 import styles from './nomination-emblem.module.scss';
 
@@ -14,12 +15,29 @@ export function NominationEmblem({ imageUrl, className }: NominationEmblemProps)
   return (
     <div className={classNames} aria-hidden='true'>
       {imageUrl ? (
-        <img className={styles.image} src={imageUrl} alt='' loading='lazy' decoding='async' />
+        <FadeInImage key={imageUrl} src={imageUrl} />
       ) : (
         <span className={styles.crystal}>
           <SnowflakeIcon className={styles.flake} strokeWidth={1.1} />
         </span>
       )}
     </div>
+  );
+}
+
+// The ice glow behind is visible at once; the logo fades in over it when it has loaded.
+function FadeInImage({ src }: { src: string }) {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  return (
+    <img
+      className={styles.image}
+      data-loaded={isLoaded}
+      src={src}
+      alt=''
+      loading='lazy'
+      decoding='async'
+      onLoad={() => setIsLoaded(true)}
+    />
   );
 }

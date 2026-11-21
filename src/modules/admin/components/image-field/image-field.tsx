@@ -2,7 +2,7 @@ import { useId, useRef, useState, type ChangeEvent } from 'react';
 import { getErrorMessage } from '@/shared/api/api';
 import { Button } from '@/shared/components';
 import { uploadImage } from '../../api/admin-api';
-import { prepareImage } from '../../lib/prepare-image';
+import { MAX_SIDE_PX, prepareImage } from '../../lib/prepare-image';
 import styles from './image-field.module.scss';
 
 type ImageFieldProps = {
@@ -44,7 +44,7 @@ export function ImageField({
     setError(null);
     setUploading(true);
     try {
-      setUrl(await uploadImage(await prepareImage(file)));
+      setUrl(await uploadImage(await prepareImage(file, MAX_SIDE_PX[shape])));
     } catch (uploadError) {
       setError(getErrorMessage(uploadError));
     } finally {

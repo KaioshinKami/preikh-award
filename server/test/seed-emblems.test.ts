@@ -1,22 +1,18 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, readdir, writeFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { readdir } from 'node:fs/promises';
 import { after, before, test } from 'node:test';
-import { readSeedNominations, seedEmblems, type SeedNomination } from '../src/db/seed.ts';
+import {
+  EMBLEMS_PATH,
+  readSeedNominations,
+  seedEmblems,
+  type SeedNomination,
+} from '../src/db/seed.ts';
 import { createTestApp } from './test-app.ts';
 
 type TestApp = Awaited<ReturnType<typeof createTestApp>>;
 
-// A real 1×1 PNG.
-const PNG = Buffer.from(
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=',
-  'base64',
-);
-
 let testApp: TestApp;
-let emblemsDir: URL;
+let adminCookie: string;
 
 const seedItem = (title: string, emblem: string): SeedNomination => ({
   title,
@@ -35,52 +31,55 @@ async function imageUrlOf(title: string): Promise<string | null> {
 
 before(async () => {
   testApp = await createTestApp();
-  const dir = await mkdtemp(join(tmpdir(), 'preikh-emblems-'));
-  await writeFile(join(dir, 'first.png'), PNG);
-  await writeFile(join(dir, 'fake.png'), '<svg></svg>');
-  emblemsDir = pathToFileURL(`${dir}/`);
+  const response = await testApp.app.inject({
+    method: 'POST',
+    url: '/api/auth/register',
+    payload: { name: 'Admin', email: 'admin@example.com', password: 'long-enough-password' },
+  });
+  const session = response.cookies.find((cookie) => cookie.name === 'preikh_session');
+  assert.ok(session);
+  adminCookie = `preikh_session=${session.value}`;
+  await testApp.sql`update users set role = 'admin' where email = 'admin@example.com'`;
 });
 
 after(() => testApp.close());
 
-test('an emblem is stored as an image and set as the nomination logo', async () => {
-  const attached = await seedEmblems(testApp.sql, [seedItem('First', 'first.png')], emblemsDir);
+test('an emblem is set as the logo of a nomination without one', async () => {
+  const attached = await seedEmblems(testApp.sql, [seedItem('First', '01-first.webp')]);
   assert.equal(attached, 1);
-
-  const url = await imageUrlOf('First');
-  assert.match(String(url), /^\/api\/images\/[0-9a-f-]{36}$/);
-  const served = await testApp.app.inject({ method: 'GET', url: String(url) });
-  assert.equal(served.statusCode, 200);
-  assert.equal(served.headers['content-type'], 'image/png');
+  assert.equal(await imageUrlOf('First'), `${EMBLEMS_PATH}01-first.webp`);
 });
 
-test('a nomination that already has a logo keeps it, and re-running adds nothing', async () => {
-  const firstUrl = await imageUrlOf('First');
-  const [{ count: imagesBefore }] = await testApp.sql<{ count: number }[]>`
-    select count(*)::int as count from images
-  `;
-
-  const attached = await seedEmblems(testApp.sql, [seedItem('First', 'first.png')], emblemsDir);
+test('a nomination that already has a logo keeps it, and re-running changes nothing', async () => {
+  await testApp.sql`update nominations set image_url = 'https://example.com/own.png' where title = 'Second'`;
+  const attached = await seedEmblems(testApp.sql, [
+    seedItem('First', '99-other.webp'),
+    seedItem('Second', '02-second.webp'),
+  ]);
   assert.equal(attached, 0);
-  assert.equal(await imageUrlOf('First'), firstUrl);
-
-  const [{ count: imagesAfter }] = await testApp.sql<{ count: number }[]>`
-    select count(*)::int as count from images
-  `;
-  assert.equal(imagesAfter, imagesBefore);
+  assert.equal(await imageUrlOf('First'), `${EMBLEMS_PATH}01-first.webp`);
+  assert.equal(await imageUrlOf('Second'), 'https://example.com/own.png');
 });
 
-test('a file that is not a picture is refused', async () => {
-  await assert.rejects(
-    seedEmblems(testApp.sql, [seedItem('Second', 'fake.png')], emblemsDir),
-    /not a JPEG, PNG or WebP/,
-  );
-  assert.equal(await imageUrlOf('Second'), null);
+test('the admin can save a nomination whose logo is an emblem', async () => {
+  const [first] = await testApp.sql<
+    { id: number }[]
+  >`select id from nominations where title = 'First'`;
+  const save = (imageUrl: string) =>
+    testApp.app.inject({
+      method: 'PUT',
+      url: `/api/admin/nominations/${first.id}`,
+      headers: { cookie: adminCookie },
+      payload: { title: 'First', category: 'A', imageUrl },
+    });
+  assert.equal((await save(`${EMBLEMS_PATH}01-first.webp`)).statusCode, 200);
+  assert.equal((await save(`${EMBLEMS_PATH}../admin.webp`)).statusCode, 400);
+  assert.equal((await save('/emblems/x.svg')).statusCode, 400);
 });
 
-test('every emblem named in the seed file exists and is a picture', async () => {
+test('every emblem named in the seed file is in the site files', async () => {
   const seed = await readSeedNominations();
-  const files = new Set(await readdir(new URL('../src/db/seed-data/emblems/', import.meta.url)));
+  const files = new Set(await readdir(new URL('../../public/emblems/', import.meta.url)));
   for (const nomination of seed) {
     assert.ok(nomination.emblem, `${nomination.title} has no emblem`);
     assert.ok(files.has(nomination.emblem), `${nomination.emblem} is missing`);

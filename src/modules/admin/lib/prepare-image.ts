@@ -1,7 +1,13 @@
 // The site shows pictures at a few hundred pixels, while phone photos weigh several megabytes.
-// Shrinking them in the browser keeps uploads fast and well under the server's 4 MB limit.
-const MAX_SIDE_PX = 1200;
-const WEBP_QUALITY = 0.86;
+// Shrinking them in the browser keeps the site fast to load and uploads under the 4 MB limit.
+// Twice the largest size a picture is shown at, so it stays sharp on retina screens.
+export const MAX_SIDE_PX = {
+  // A nomination logo is shown at most 240 px wide.
+  emblem: 640,
+  // A nominee photo fills a card of about 270 × 340 px.
+  portrait: 720,
+} as const;
+const WEBP_QUALITY = 0.8;
 const JPEG_QUALITY = 0.88;
 const MAX_PNG_BYTES = 2.5 * 1024 * 1024;
 
@@ -11,11 +17,11 @@ function canvasToBlob(canvas: HTMLCanvasElement, type: string, quality?: number)
   return new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, type, quality));
 }
 
-export async function prepareImage(file: File): Promise<Blob> {
+export async function prepareImage(file: File, maxSidePx: number): Promise<Blob> {
   const bitmap = await createImageBitmap(file).catch(() => {
     throw new Error(UNREADABLE_FILE);
   });
-  const scale = Math.min(1, MAX_SIDE_PX / Math.max(bitmap.width, bitmap.height));
+  const scale = Math.min(1, maxSidePx / Math.max(bitmap.width, bitmap.height));
   const canvas = document.createElement('canvas');
   canvas.width = Math.round(bitmap.width * scale);
   canvas.height = Math.round(bitmap.height * scale);

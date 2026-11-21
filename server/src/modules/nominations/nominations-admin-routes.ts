@@ -30,12 +30,13 @@ const idParamsSchema = {
   properties: { id: { type: 'integer', minimum: 1 } },
 };
 
-// A picture uploaded through /api/admin/images, or an external https image.
-// Nothing else, so a stored URL can't point at another scheme or site path.
+// A picture uploaded through /api/admin/images, one of the site's emblems (/emblems/…webp),
+// or an external https image. Nothing else, so a stored URL can't point at another scheme
+// or site path.
 const imageUrlSchema = {
   type: ['string', 'null'],
   maxLength: 500,
-  pattern: '^(https://.+|/api/images/[0-9a-f-]{36})$',
+  pattern: '^(https://.+|/api/images/[0-9a-f-]{36}|/emblems/[0-9a-z-]+\\.webp)$',
 };
 
 const nominationSchema = {

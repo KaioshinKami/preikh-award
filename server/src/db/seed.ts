@@ -1,6 +1,5 @@
 import { readFile } from 'node:fs/promises';
 import { requireEnv } from '../config.ts';
-import { detectImageType, saveImage } from '../modules/images/images-repository.ts';
 import type {
   NominationTranslations,
   NomineeTranslations,
@@ -17,14 +16,15 @@ export type SeedNomination = {
   title: string;
   category: string;
   description: string;
-  // A picture in seed-data/emblems/ used as the nomination's logo.
+  // A file in the site's public/emblems/ used as the nomination's logo.
   emblem?: string;
   translations?: NominationTranslations;
   nominees: SeedNominee[];
 };
 
 const SEED_FILE = new URL('./seed-data/nominations.json', import.meta.url);
-const EMBLEMS_DIR = new URL('./seed-data/emblems/', import.meta.url);
+// Served by the site as static files: no database read, cached by the CDN like the site itself.
+export const EMBLEMS_PATH = '/emblems/';
 
 // Fills an empty database; does nothing once any nomination exists, so it is safe to re-run.
 export async function seedNominations(sql: Sql, nominations: SeedNomination[]): Promise<boolean> {
@@ -98,28 +98,15 @@ export async function seedTranslations(sql: Sql, nominations: SeedNomination[]) 
   return { nominations: nominationCount, nominees: nomineeCount };
 }
 
-// Gives every nomination that has no logo yet its emblem from the seed file, stored like an
-// upload from the admin page. A logo set in the admin page is never replaced. Safe to re-run.
-export async function seedEmblems(
-  sql: Sql,
-  nominations: SeedNomination[],
-  emblemsDir: URL = EMBLEMS_DIR,
-): Promise<number> {
+// Gives every nomination that has no logo yet its emblem from the seed file. A logo set in the
+// admin page is never replaced. Safe to re-run.
+export async function seedEmblems(sql: Sql, nominations: SeedNomination[]): Promise<number> {
   let attached = 0;
   for (const nomination of nominations) {
     if (!nomination.emblem) continue;
-    const [target] = await sql<{ id: number }[]>`
-      select id from nominations where title = ${nomination.title} and image_url is null
-    `;
-    if (!target) continue;
-
-    const data = await readFile(new URL(nomination.emblem, emblemsDir));
-    const contentType = detectImageType(data);
-    if (!contentType) throw new Error(`${nomination.emblem} is not a JPEG, PNG or WebP picture`);
-
-    const url = await saveImage(sql, contentType, data);
     const updated = await sql`
-      update nominations set image_url = ${url} where id = ${target.id} and image_url is null
+      update nominations set image_url = ${EMBLEMS_PATH + nomination.emblem}
+      where title = ${nomination.title} and image_url is null
       returning id
     `;
     attached += updated.length;
