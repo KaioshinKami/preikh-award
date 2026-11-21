@@ -1,10 +1,13 @@
-import { parseNotes, PLAYLIST, type ParsedNote, type Tune } from './tunes';
+import { parseNotes, PLAYLIST, type Tune } from './tunes';
 
 const VOLUME = 0.8;
 const FADE_SECONDS = 0.4;
-// Tunes are put on the audio clock a little before they are due, checked this often.
+// Notes are put on the audio clock only this far ahead, so the browser only ever holds the few
+// notes about to sound: a phone can't keep up with a whole tune of notes waiting at once.
 const SCHEDULE_AHEAD_SECONDS = 1.5;
-const CHECK_EVERY_MS = 400;
+const CHECK_EVERY_MS = 250;
+// A note that comes due during a long freeze of the page is dropped rather than played late.
+const LATE_NOTE_SECONDS = 0.25;
 const PAUSE_BETWEEN_TUNES_SECONDS = 1.2;
 const START_LEAD_SECONDS = 0.15;
 
@@ -15,38 +18,109 @@ const TINE_PARTIALS = [
   { ratio: 3.01, level: 0.1, decay: 0.45 },
   { ratio: 4.2, level: 0.07, decay: 0.18 },
 ];
+const TINE_ATTACK_SECONDS = 0.004;
+// The fundamental is quieter than a thousandth of its start by then.
+const TINE_SECONDS = 1.6;
 const MELODY_LEVEL = 0.2;
 const SECOND_VOICE_LEVEL = 0.12;
 const CHORD_LEVEL = 0.045;
 const SLEIGH_BELL_LEVEL = 0.03;
-const REVERB_SECONDS = 2.6;
+// A short mono echo: a long stereo one is one of the heaviest things a phone can be asked to do.
+const REVERB_SECONDS = 1.6;
 
 const midiToFrequency = (midi: number) => 440 * 2 ** ((midi - 69) / 12);
 // A player's small unevenness, so the box doesn't sound like a metronome.
 const humanize = (seconds: number) => (Math.random() - 0.5) * 2 * seconds;
 
-type ParsedTune = {
-  bpm: number;
-  lines: ParsedNote[][];
-  chords: ParsedNote[];
-  sleighBells: boolean;
-};
+type MusicEvent =
+  | { time: number; kind: 'tine'; pitch: number; level: number }
+  | { time: number; kind: 'chord'; pitches: number[]; seconds: number }
+  | { time: number; kind: 'sleighBell'; isAccent: boolean };
 
-const parseTune = (tune: Tune): ParsedTune => ({
-  bpm: tune.bpm,
-  lines: tune.lines.map(parseNotes),
-  chords: parseNotes(tune.chords),
-  sleighBells: tune.sleighBells ?? false,
-});
+// Every note of a tune starting at `start`, in time order, and when the tune ends.
+function tuneEvents(tune: Tune, start: number): { events: MusicEvent[]; end: number } {
+  const beatSeconds = 60 / tune.bpm;
+  const events: MusicEvent[] = [];
+  let end = start;
+
+  tune.lines.forEach((line, lineIndex) => {
+    const level = lineIndex === 0 ? MELODY_LEVEL : SECOND_VOICE_LEVEL;
+    let time = start;
+    for (const note of parseNotes(line)) {
+      for (const pitch of note.pitches) {
+        events.push({
+          time: time + humanize(0.006),
+          kind: 'tine',
+          pitch,
+          level: level * (0.88 + Math.random() * 0.24),
+        });
+      }
+      time += note.beats * beatSeconds;
+    }
+    end = Math.max(end, time);
+  });
+
+  let time = start;
+  for (const chord of parseNotes(tune.chords)) {
+    const seconds = chord.beats * beatSeconds;
+    if (chord.pitches.length > 0) {
+      events.push({ time, kind: 'chord', pitches: chord.pitches, seconds });
+    }
+    time += seconds;
+  }
+
+  if (tune.sleighBells) {
+    for (let beat = 0; start + beat * beatSeconds < end; beat++) {
+      events.push({
+        time: start + beat * beatSeconds,
+        kind: 'sleighBell',
+        isAccent: beat % 2 === 1,
+      });
+    }
+  }
+
+  events.sort((first, second) => first.time - second.time);
+  return { events, end };
+}
+
+// One tine, written out once as samples, so playing it later is a single cheap buffer instead of
+// four oscillators with their envelopes.
+function renderTine(context: BaseAudioContext, midi: number): AudioBuffer {
+  const { sampleRate } = context;
+  const length = Math.ceil(sampleRate * TINE_SECONDS);
+  const buffer = context.createBuffer(1, length, sampleRate);
+  const samples = buffer.getChannelData(0);
+  const frequency = midiToFrequency(midi);
+  const attackSamples = TINE_ATTACK_SECONDS * sampleRate;
+
+  for (const partial of TINE_PARTIALS) {
+    const step = (2 * Math.PI * frequency * partial.ratio) / sampleRate;
+    const decaySamples = partial.decay * sampleRate;
+    // Fades to the same quietness the melody's notes used to fade to.
+    const finalLevel = 0.0001 / (MELODY_LEVEL * partial.level);
+    const fadePerSample = finalLevel ** (1 / (decaySamples - attackSamples));
+    const end = Math.min(length, Math.ceil(decaySamples));
+    let fading = partial.level;
+    for (let index = 0; index < end; index++) {
+      let envelope: number;
+      if (index < attackSamples) {
+        envelope = (partial.level * index) / attackSamples;
+      } else {
+        envelope = fading;
+        fading *= fadePerSample;
+      }
+      samples[index] += envelope * Math.sin(step * index);
+    }
+  }
+  return buffer;
+}
 
 function createReverb(context: AudioContext): ConvolverNode {
   const length = Math.round(context.sampleRate * REVERB_SECONDS);
-  const impulse = context.createBuffer(2, length, context.sampleRate);
-  for (let channel = 0; channel < impulse.numberOfChannels; channel++) {
-    const samples = impulse.getChannelData(channel);
-    for (let index = 0; index < length; index++) {
-      samples[index] = (Math.random() * 2 - 1) * (1 - index / length) ** 3;
-    }
+  const impulse = context.createBuffer(1, length, context.sampleRate);
+  const samples = impulse.getChannelData(0);
+  for (let index = 0; index < length; index++) {
+    samples[index] = (Math.random() * 2 - 1) * (1 - index / length) ** 3;
   }
   const reverb = context.createConvolver();
   reverb.buffer = impulse;
@@ -59,9 +133,12 @@ type Graph = { context: AudioContext; voices: GainNode; output: GainNode; noise:
 // and a snowy echo. Nothing is downloaded. The playlist loops until paused.
 export class MusicBox {
   private graph: Graph | null = null;
-  private readonly tunes = PLAYLIST.map(parseTune);
+  private readonly tines = new Map<number, AudioBuffer>();
   private tuneIndex = 0;
   private nextTuneTime = 0;
+  // Notes of the tune being played that are not on the audio clock yet.
+  private pending: MusicEvent[] = [];
+  private pendingIndex = 0;
   private checkTimer: number | undefined;
   private suspendTimer: number | undefined;
   private readonly runningListeners = new Set<(isRunning: boolean) => void>();
@@ -117,6 +194,7 @@ export class MusicBox {
     this.checkTimer = undefined;
     void this.graph?.context.close();
     this.graph = null;
+    this.tines.clear();
   }
 
   private setUp(): Graph {
@@ -148,65 +226,55 @@ export class MusicBox {
     return this.graph;
   }
 
+  // Puts the notes of the next moments on the audio clock, moving on to the next tune when the
+  // current one runs out.
   private scheduleAhead(): void {
     if (!this.graph) return;
     const now = this.graph.context.currentTime;
-    while (this.nextTuneTime < now + SCHEDULE_AHEAD_SECONDS) {
-      // A fresh audio clock stands at 0: leave room so no note lands before "now".
-      if (this.nextTuneTime < now + START_LEAD_SECONDS) {
-        this.nextTuneTime = now + START_LEAD_SECONDS;
+    const horizon = now + SCHEDULE_AHEAD_SECONDS;
+
+    for (;;) {
+      if (this.pendingIndex >= this.pending.length) {
+        // A fresh audio clock stands at 0: leave room so no note lands before "now".
+        if (this.nextTuneTime < now + START_LEAD_SECONDS) {
+          this.nextTuneTime = now + START_LEAD_SECONDS;
+        }
+        if (this.nextTuneTime > horizon) return;
+        const { events, end } = tuneEvents(PLAYLIST[this.tuneIndex], this.nextTuneTime);
+        this.pending = events;
+        this.pendingIndex = 0;
+        this.nextTuneTime = end + PAUSE_BETWEEN_TUNES_SECONDS;
+        this.tuneIndex = (this.tuneIndex + 1) % PLAYLIST.length;
+        continue;
       }
-      const end = this.scheduleTune(this.tunes[this.tuneIndex], this.nextTuneTime);
-      this.nextTuneTime = end + PAUSE_BETWEEN_TUNES_SECONDS;
-      this.tuneIndex = (this.tuneIndex + 1) % this.tunes.length;
+
+      const event = this.pending[this.pendingIndex];
+      if (event.time > horizon) return;
+      this.pendingIndex++;
+      if (event.time < now - LATE_NOTE_SECONDS) continue;
+      this.start(event, Math.max(event.time, now));
     }
   }
 
-  // Puts a whole tune on the audio clock from `start` and returns when it ends.
-  private scheduleTune(tune: ParsedTune, start: number): number {
-    const beatSeconds = 60 / tune.bpm;
-    let end = start;
-
-    tune.lines.forEach((line, lineIndex) => {
-      const level = lineIndex === 0 ? MELODY_LEVEL : SECOND_VOICE_LEVEL;
-      let time = start;
-      for (const note of line) {
-        for (const pitch of note.pitches) {
-          this.tine(time + humanize(0.006), pitch, level * (0.88 + Math.random() * 0.24));
-        }
-        time += note.beats * beatSeconds;
-      }
-      end = Math.max(end, time);
-    });
-
-    let time = start;
-    for (const chord of tune.chords) {
-      if (chord.pitches.length > 0) this.chord(time, chord.pitches, chord.beats * beatSeconds);
-      time += chord.beats * beatSeconds;
-    }
-
-    if (tune.sleighBells) {
-      for (let beat = 0; start + beat * beatSeconds < end; beat++) {
-        this.sleighBell(start + beat * beatSeconds, beat % 2 === 1);
-      }
-    }
-    return end;
+  private start(event: MusicEvent, time: number): void {
+    if (event.kind === 'tine') this.tine(time, event.pitch, event.level);
+    else if (event.kind === 'chord') this.chord(time, event.pitches, event.seconds);
+    else this.sleighBell(time, event.isAccent);
   }
 
   private tine(time: number, midi: number, level: number): void {
     const { context, voices } = this.graph!;
-    const frequency = midiToFrequency(midi);
-    for (const partial of TINE_PARTIALS) {
-      const oscillator = context.createOscillator();
-      const envelope = context.createGain();
-      oscillator.frequency.value = frequency * partial.ratio;
-      envelope.gain.setValueAtTime(0, time);
-      envelope.gain.linearRampToValueAtTime(level * partial.level, time + 0.004);
-      envelope.gain.exponentialRampToValueAtTime(0.0001, time + partial.decay);
-      oscillator.connect(envelope).connect(voices);
-      oscillator.start(time);
-      oscillator.stop(time + partial.decay + 0.05);
+    let buffer = this.tines.get(midi);
+    if (!buffer) {
+      buffer = renderTine(context, midi);
+      this.tines.set(midi, buffer);
     }
+    const source = context.createBufferSource();
+    const gain = context.createGain();
+    source.buffer = buffer;
+    gain.gain.value = level;
+    source.connect(gain).connect(voices);
+    source.start(time);
   }
 
   private chord(time: number, pitches: number[], seconds: number): void {
