@@ -1,0 +1,90 @@
+@use '@/shared/sass/mixins' as *;
+
+// The whole screen: a night sky with aurora glows, as on the site.
+.page {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(60% 50% at 15% 0%, rgb(94 234 212 / 16%), transparent 70%),
+    radial-gradient(60% 50% at 85% 0%, rgb(167 139 250 / 20%), transparent 70%),
+    radial-gradient(120% 80% at 50% -10%, rgb(30 64 175 / 35%), transparent 60%),
+    linear-gradient(180deg, #071025 0%, var(--color-bg) 55%, #03060f 100%);
+  color: var(--color-text);
+
+  &[data-controls='false'] {
+    cursor: none;
+  }
+}
+
+.stage {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+
+  .page[data-controls='false'] & {
+    cursor: none;
+  }
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+}
+
+// Above the snow (z-index 50).
+.controls {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  z-index: 60;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  max-width: calc(100vw - 32px);
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: rgb(5 9 20 / 80%);
+  backdrop-filter: blur(12px);
+  transform: translateX(-50%);
+  transition: opacity 0.4s ease;
+
+  .page[data-controls='false'] & {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.jump {
+  max-width: 260px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: rgb(14 28 54 / 90%);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 14px;
+}
+
+.status {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 16px;
+  font-size: 18px;
+  text-align: center;
+}
+
+.statusActions {
+  display: flex;
+  gap: 12px;
+}
+
+.loader {
+  width: 110px;
+}

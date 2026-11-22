@@ -85,7 +85,7 @@ function tuneEvents(tune: Tune, start: number): { events: MusicEvent[]; end: num
 
 // One tine, written out once as samples, so playing it later is a single cheap buffer instead of
 // four oscillators with their envelopes.
-function renderTine(context: BaseAudioContext, midi: number): AudioBuffer {
+export function renderTine(context: BaseAudioContext, midi: number): AudioBuffer {
   const { sampleRate } = context;
   const length = Math.ceil(sampleRate * TINE_SECONDS);
   const buffer = context.createBuffer(1, length, sampleRate);

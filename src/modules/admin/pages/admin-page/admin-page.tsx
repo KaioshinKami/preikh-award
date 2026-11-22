@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { useAuth } from '@/modules/auth';
+import { CeremonyPage } from '@/modules/ceremony';
 import { Button, Logo } from '@/shared/components';
 import { AdminLayout } from '../../components/admin-layout/admin-layout';
 import { ApplicationsPanel } from '../../components/applications-panel/applications-panel';
@@ -48,6 +49,9 @@ export function AdminPage() {
       </AccessScreen>
     );
   }
+
+  // The ceremony takes the whole screen, without the admin menu.
+  if (section === 'ceremony') return <CeremonyPage onExit={() => navigate('overview')} />;
 
   const votesUserId = Number(params.get('user')) || null;
 
